@@ -368,6 +368,7 @@ summaryModal.addEventListener("click", event => {
 initTicker();
 loadSettings();
 if (!rowsContainer.children.length) createRow();
-initDonut(getDonutData(0));
-initSparkline(getSparklineData(0));
+const initialHistory = getMeetingHistory();
+initDonut(getHistoryDonutData(initialHistory) || getDonutData(0));
+initSparkline(getHistorySparklineData(initialHistory) || getSparklineData(0));
 updateSummary();

@@ -117,3 +117,50 @@ function updateSparkline(data) {
 
   dots.exit().remove();
 }
+
+function getHistoryDonutData(history) {
+  if (!history || !history.length) return null;
+  const now = new Date();
+  const days = Array.from({ length: 7 }).map((_, index) => {
+    const date = new Date(now);
+    date.setDate(now.getDate() - (6 - index));
+    return {
+      label: date.toLocaleDateString("en-US", { weekday: "short" }),
+      value: 0,
+      dateKey: date.toDateString()
+    };
+  });
+
+  history.forEach(entry => {
+    const entryDate = new Date(entry.date);
+    const match = days.find(day => day.dateKey === entryDate.toDateString());
+    if (match) match.value += Number(entry.cost) || 0;
+  });
+
+  const filtered = days.filter(day => day.value > 0);
+  if (!filtered.length) return null;
+  return filtered.map(day => ({ type: day.label, value: day.value }));
+}
+
+function getHistorySparklineData(history) {
+  if (!history || !history.length) return null;
+  const now = new Date();
+  const days = Array.from({ length: 14 }).map((_, index) => {
+    const date = new Date(now);
+    date.setDate(now.getDate() - (13 - index));
+    return {
+      value: 0,
+      dateKey: date.toDateString()
+    };
+  });
+
+  history.forEach(entry => {
+    const entryDate = new Date(entry.date);
+    const match = days.find(day => day.dateKey === entryDate.toDateString());
+    if (match) match.value += Number(entry.cost) || 0;
+  });
+
+  const values = days.map(day => day.value);
+  if (values.every(val => val === 0)) return null;
+  return values;
+}

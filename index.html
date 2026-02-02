@@ -65,14 +65,17 @@
         <p class="rate-note" id="rateNote"></p>
         <div class="breakdown" id="breakdown"></div>
         <div class="timer-row">
-          <div class="timer" id="timer">00:00</div>
           <button class="btn ghost" id="copyBtn">Copy Summary</button>
         </div>
       </div>
 
-      <div class="card">
+      <div class="card ticker-card">
         <h2>Real-time Cost Ticker</h2>
         <div id="ticker" class="ticker"></div>
+        <div class="ticker-actions">
+          <div class="timer" id="timer">00:00</div>
+          <button class="btn danger hidden" id="stopBtn">Stop Meeting</button>
+        </div>
         <p class="muted">The ticker updates live as the meeting runs.</p>
       </div>
 
@@ -88,6 +91,38 @@
     </section>
     <div class="data-source">
       💼 Salary data from <a href="https://www.levels.fyi/companies/microsoft/salaries" target="_blank" rel="noopener">Levels.fyi</a> (Microsoft, US-based, total compensation including base, stock, and bonus)
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="summaryModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
+      <div class="modal-header">
+        <h2 id="summaryTitle">Meeting Complete! 🎉</h2>
+        <p class="muted">Here’s the damage report.</p>
+      </div>
+      <div class="modal-stats">
+        <div class="stat">
+          <span class="label">Duration</span>
+          <span class="value" id="summaryDuration">0 minutes</span>
+        </div>
+        <div class="stat">
+          <span class="label">Attendees</span>
+          <span class="value" id="summaryAttendees">0 people</span>
+        </div>
+        <div class="stat">
+          <span class="label">Total Cost</span>
+          <span class="value" id="summaryCost">$0.00</span>
+        </div>
+      </div>
+      <div class="modal-section">
+        <h3>What you could buy instead</h3>
+        <ul id="summaryAlternatives" class="alternatives"></ul>
+      </div>
+      <div class="modal-section fun-fact" id="summaryFact"></div>
+      <div class="modal-actions">
+        <button class="btn primary" id="saveMeetingBtn">Save to Weekly Log</button>
+        <button class="btn" id="dismissModalBtn">Dismiss</button>
+      </div>
     </div>
   </div>
 

@@ -1,4 +1,5 @@
 const ROLE_PRESETS = [
+  // Engineering
   {
     id: "sde-l59",
     name: "SDE",
@@ -62,6 +63,8 @@ const ROLE_PRESETS = [
     annual: 600000,
     discipline: "Engineering"
   },
+
+  // Product
   {
     id: "pm-l59",
     name: "PM",
@@ -132,6 +135,8 @@ const ROLE_PRESETS = [
     annual: 816000,
     discipline: "Product"
   },
+
+  // Design
   {
     id: "designer-l59",
     name: "Designer",
@@ -181,6 +186,175 @@ const ROLE_PRESETS = [
     annual: 320000,
     discipline: "Design"
   },
+
+  // Content Design (formerly Technical Writer)
+  {
+    id: "content-designer-l59",
+    name: "Content Designer",
+    level: "59",
+    annual: 130000,
+    discipline: "Content Design"
+  },
+  {
+    id: "content-designer-l60",
+    name: "Content Designer",
+    level: "60",
+    annual: 150000,
+    discipline: "Content Design"
+  },
+  {
+    id: "content-designer-l61",
+    name: "Content Designer II",
+    level: "61",
+    annual: 168000,
+    discipline: "Content Design"
+  },
+  {
+    id: "senior-content-designer-l62",
+    name: "Senior Content Designer",
+    level: "62",
+    annual: 188000,
+    discipline: "Content Design"
+  },
+  {
+    id: "senior-content-designer-l63",
+    name: "Senior Content Designer",
+    level: "63",
+    annual: 210000,
+    discipline: "Content Design"
+  },
+  {
+    id: "principal-content-designer-l64",
+    name: "Principal Content Designer",
+    level: "64",
+    annual: 249000,
+    discipline: "Content Design"
+  },
+
+  // UX Research
+  {
+    id: "ux-researcher-l59",
+    name: "UX Researcher",
+    level: "59",
+    annual: 140000,
+    discipline: "UX Research"
+  },
+  {
+    id: "ux-researcher-l60",
+    name: "UX Researcher",
+    level: "60",
+    annual: 158000,
+    discipline: "UX Research"
+  },
+  {
+    id: "ux-researcher-l61",
+    name: "UX Researcher II",
+    level: "61",
+    annual: 178000,
+    discipline: "UX Research"
+  },
+  {
+    id: "senior-ux-researcher-l62",
+    name: "Senior UX Researcher",
+    level: "62",
+    annual: 198000,
+    discipline: "UX Research"
+  },
+  {
+    id: "senior-ux-researcher-l63",
+    name: "Senior UX Researcher",
+    level: "63",
+    annual: 220000,
+    discipline: "UX Research"
+  },
+  {
+    id: "principal-ux-researcher-l64",
+    name: "Principal UX Researcher",
+    level: "64",
+    annual: 250000,
+    discipline: "UX Research"
+  },
+  {
+    id: "principal-ux-researcher-l65",
+    name: "Principal UX Researcher",
+    level: "65",
+    annual: 300000,
+    discipline: "UX Research"
+  },
+  {
+    id: "partner-ux-researcher-l66",
+    name: "Partner UX Researcher",
+    level: "66",
+    annual: 400000,
+    discipline: "UX Research"
+  },
+
+  // Data Science
+  {
+    id: "data-scientist-l59",
+    name: "Data Scientist",
+    level: "59",
+    annual: 163000,
+    discipline: "Data Science"
+  },
+  {
+    id: "data-scientist-l60",
+    name: "Data Scientist",
+    level: "60",
+    annual: 177000,
+    discipline: "Data Science"
+  },
+  {
+    id: "data-scientist-l61",
+    name: "Data Scientist II",
+    level: "61",
+    annual: 208000,
+    discipline: "Data Science"
+  },
+  {
+    id: "senior-data-scientist-l62",
+    name: "Senior Data Scientist",
+    level: "62",
+    annual: 230000,
+    discipline: "Data Science"
+  },
+  {
+    id: "senior-data-scientist-l63",
+    name: "Senior Data Scientist",
+    level: "63",
+    annual: 242000,
+    discipline: "Data Science"
+  },
+  {
+    id: "principal-data-scientist-l64",
+    name: "Principal Data Scientist",
+    level: "64",
+    annual: 300000,
+    discipline: "Data Science"
+  },
+  {
+    id: "principal-data-scientist-l65",
+    name: "Principal Data Scientist",
+    level: "65",
+    annual: 334000,
+    discipline: "Data Science"
+  },
+  {
+    id: "partner-data-scientist-l66",
+    name: "Partner Data Scientist",
+    level: "66",
+    annual: 450000,
+    discipline: "Data Science"
+  },
+  {
+    id: "distinguished-data-scientist-l67",
+    name: "Distinguished Data Scientist",
+    level: "67",
+    annual: 559000,
+    discipline: "Data Science"
+  },
+
+  // Management
   {
     id: "em-l64",
     name: "Engineering Manager",
@@ -216,27 +390,8 @@ const ROLE_PRESETS = [
     annual: 1000000,
     discipline: "Management"
   },
-  {
-    id: "data-scientist-l63",
-    name: "Data Scientist",
-    level: "63",
-    annual: 240000,
-    discipline: "Other"
-  },
-  {
-    id: "ux-researcher-l63",
-    name: "UX Researcher",
-    level: "63",
-    annual: 210000,
-    discipline: "Other"
-  },
-  {
-    id: "technical-writer-l62",
-    name: "Technical Writer",
-    level: "62",
-    annual: 175000,
-    discipline: "Other"
-  },
+
+  // Other
   {
     id: "program-manager-l63",
     name: "Program Manager",

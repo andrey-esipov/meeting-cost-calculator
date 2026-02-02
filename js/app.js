@@ -10,23 +10,45 @@ const startBtn = document.getElementById("startBtn");
 const resetBtn = document.getElementById("resetBtn");
 const copyBtn = document.getElementById("copyBtn");
 const themeToggle = document.getElementById("themeToggle");
+const rateNoteEl = document.getElementById("rateNote");
+const breakdownEl = document.getElementById("breakdown");
 
 let meetingTimer = null;
 let elapsedSeconds = 0;
 let perMinute = 0;
+
+function renderRoleOptions(select, selectedId) {
+  const disciplineOrder = ["Engineering", "Product", "Design", "Management", "Other"];
+  const grouped = ROLE_PRESETS.reduce((acc, role) => {
+    acc[role.discipline] = acc[role.discipline] || [];
+    acc[role.discipline].push(role);
+    return acc;
+  }, {});
+
+  disciplineOrder.forEach(discipline => {
+    const roles = grouped[discipline];
+    if (!roles || !roles.length) return;
+    const optgroup = document.createElement("optgroup");
+    optgroup.label = discipline;
+
+    roles.forEach(role => {
+      const option = document.createElement("option");
+      option.value = role.id;
+      option.textContent = `${role.name} (L${role.level}) — $${role.annual.toLocaleString()}`;
+      if (role.id === selectedId) option.selected = true;
+      optgroup.appendChild(option);
+    });
+
+    select.appendChild(optgroup);
+  });
+}
 
 function createRow(rowData = { roleId: ROLE_PRESETS[0].id, count: 1 }) {
   const row = document.createElement("div");
   row.className = "attendee-row";
 
   const select = document.createElement("select");
-  ROLE_PRESETS.forEach(role => {
-    const option = document.createElement("option");
-    option.value = role.id;
-    option.textContent = `${role.name} ($${role.annual.toLocaleString()})`;
-    if (role.id === rowData.roleId) option.selected = true;
-    select.appendChild(option);
-  });
+  renderRoleOptions(select, rowData.roleId);
 
   const countInput = document.createElement("input");
   countInput.type = "number";
@@ -69,6 +91,39 @@ function updateSummary() {
   perMinuteEl.textContent = formatCurrency(totals.perMinute);
   perHourEl.textContent = formatCurrency(totals.hourly);
   plannedTotalEl.textContent = formatCurrency(totals.plannedTotal);
+
+  if (rateNoteEl) {
+    rateNoteEl.textContent = `This meeting costs ${formatCurrency(totals.hourly)} per hour (${formatCurrency(totals.perMinute)} per minute).`;
+  }
+
+  if (breakdownEl) {
+    const breakdownItems = rows
+      .map(row => {
+        const role = ROLE_PRESETS.find(r => r.id === row.roleId);
+        const count = Number(row.count || 0);
+        if (!role || count <= 0) return null;
+        return {
+          label: `${role.name} (L${role.level}) × ${count}`,
+          hourly: annualToHourly(role.annual * count)
+        };
+      })
+      .filter(Boolean);
+
+    if (totals.totalAttendees > 1 && breakdownItems.length) {
+      breakdownEl.style.display = "grid";
+      breakdownEl.innerHTML = breakdownItems
+        .map(item => `
+          <div class="breakdown-item">
+            <span>${item.label}</span>
+            <span>${formatCurrency(item.hourly)} / hr</span>
+          </div>
+        `)
+        .join("");
+    } else {
+      breakdownEl.style.display = "none";
+      breakdownEl.innerHTML = "";
+    }
+  }
 
   updateDonut(getDonutData(totals.hourly));
   updateSparkline(getSparklineData(totals.hourly));

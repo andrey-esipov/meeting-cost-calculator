@@ -219,6 +219,45 @@ input, select {
   color: var(--muted);
 }
 
+.rate-note {
+  margin: 8px 0 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.breakdown {
+  display: none;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.data-source {
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.data-source a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.data-source a:hover {
+  text-decoration: underline;
+}
+
 #donut svg, #sparkline svg {
   width: 100%;
   height: auto;

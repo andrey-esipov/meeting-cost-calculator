@@ -24,14 +24,17 @@ const summaryAlternativesEl = document.getElementById("summaryAlternatives");
 const summaryFactEl = document.getElementById("summaryFact");
 const saveMeetingBtn = document.getElementById("saveMeetingBtn");
 const dismissModalBtn = document.getElementById("dismissModalBtn");
-const presetButtons = document.querySelectorAll(".preset-chip");
+// Remove direct selection to avoid timing issues
+// const presetButtons = document.querySelectorAll(".preset-chip");
 
 let meetingTimer = null;
 let elapsedSeconds = 0;
 let perMinute = 0;
 
-function handlePreset(event) {
-  const preset = event.target.dataset.preset;
+function handlePreset(target) {
+  const preset = target.dataset.preset;
+  if (!preset) return;
+  
   rowsContainer.innerHTML = "";
   
   const presets = {
@@ -69,7 +72,12 @@ function handlePreset(event) {
   }
 }
 
-presetButtons.forEach(btn => btn.addEventListener("click", handlePreset));
+// Event delegation for robustness
+document.addEventListener("click", (e) => {
+  if (e.target.matches(".preset-chip")) {
+    handlePreset(e.target);
+  }
+});
 
 function renderRoleOptions(select, selectedId) {
   const disciplineOrder = ["Engineering", "Product", "Design", "Content Design", "UX Research", "Data Science", "Management", "Other"];

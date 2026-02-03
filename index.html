@@ -27,11 +27,29 @@
           <label for="duration">Planned meeting duration (minutes)</label>
           <input type="number" id="duration" min="1" value="30" />
         </div>
+        <div class="form-group">
+          <label for="recurring">Recurring?</label>
+          <select id="recurring">
+            <option value="one-off" selected>One-off</option>
+            <option value="daily">Daily (x240)</option>
+            <option value="weekly">Weekly (x50)</option>
+            <option value="bi-weekly">Bi-weekly (x25)</option>
+            <option value="monthly">Monthly (x12)</option>
+          </select>
+        </div>
 
         <div class="attendees">
           <div class="attendees-header">
             <h3>Attendees</h3>
             <button class="btn small" id="addRow">Add role</button>
+          </div>
+          <div class="quick-presets">
+            <div class="quick-presets__label">Quick Presets</div>
+            <div class="quick-presets__actions">
+              <button class="preset-chip" data-preset="triad">Triad / Triage</button>
+              <button class="preset-chip" data-preset="spec-review">Spec Review</button>
+              <button class="preset-chip" data-preset="leadership">Leadership Review</button>
+            </div>
           </div>
           <div id="attendeeRows"></div>
         </div>
@@ -56,6 +74,10 @@
           <div class="summary-item">
             <div class="label">Planned Total</div>
             <div class="value" id="plannedTotal">$0.00</div>
+          </div>
+          <div class="summary-item annual-run-rate is-one-off">
+            <div class="label">Annual Run Rate</div>
+            <div class="value" id="annualRunRate">$0.00</div>
           </div>
           <div class="summary-item">
             <div class="label">Live Cost</div>

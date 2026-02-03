@@ -24,10 +24,52 @@ const summaryAlternativesEl = document.getElementById("summaryAlternatives");
 const summaryFactEl = document.getElementById("summaryFact");
 const saveMeetingBtn = document.getElementById("saveMeetingBtn");
 const dismissModalBtn = document.getElementById("dismissModalBtn");
+const presetButtons = document.querySelectorAll(".preset-chip");
 
 let meetingTimer = null;
 let elapsedSeconds = 0;
 let perMinute = 0;
+
+function handlePreset(event) {
+  const preset = event.target.dataset.preset;
+  rowsContainer.innerHTML = "";
+  
+  const presets = {
+    "triad": [
+      { roleId: "pm-l60", count: 1 },
+      { roleId: "em-l64", count: 1 },
+      { roleId: "sde-l60", count: 2 }
+    ],
+    "spec-review": [
+      { roleId: "principal-pm-l64", count: 1 },
+      { roleId: "senior-pm-l62", count: 1 },
+      { roleId: "principal-sde-l64", count: 1 },
+      { roleId: "senior-sde-l62", count: 2 },
+      { roleId: "designer-l60", count: 1 }
+    ],
+    "leadership": [
+      { roleId: "partner-pm-l66", count: 1 },
+      { roleId: "partner-sde-l66", count: 1 },
+      { roleId: "group-pm-l67", count: 1 },
+      { roleId: "senior-director-l67", count: 1 }
+    ],
+    "all-hands": [
+      { roleId: "pm-l60", count: 6 },
+      { roleId: "sde-l60", count: 25 },
+      { roleId: "em-l64", count: 6 },
+      { roleId: "designer-l60", count: 4 },
+      { roleId: "ux-researcher-l60", count: 2 }
+    ]
+  };
+
+  const rows = presets[preset];
+  if (rows) {
+    rows.forEach(row => createRow(row));
+    updateSummary();
+  }
+}
+
+presetButtons.forEach(btn => btn.addEventListener("click", handlePreset));
 
 function renderRoleOptions(select, selectedId) {
   const disciplineOrder = ["Engineering", "Product", "Design", "Content Design", "UX Research", "Data Science", "Management", "Other"];

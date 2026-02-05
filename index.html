@@ -20,10 +20,10 @@
       <button class="btn ghost" id="themeToggle" aria-label="Toggle theme">Toggle Theme</button>
     </header>
 
-    <nav class="view-nav" aria-label="Views">
-      <button class="view-tab active" data-view="view-calculator">Calculator</button>
-      <button class="view-tab" data-view="view-agenda">Agenda Auditor</button>
-      <button class="view-tab" data-view="view-value">Value Analyzer</button>
+    <nav class="app-nav" aria-label="Views">
+      <button class="nav-pill active" data-view="view-calculator">Calculator</button>
+      <button class="nav-pill" data-view="view-agenda">Agenda Auditor</button>
+      <button class="nav-pill" data-view="view-value">Value Analyzer</button>
     </nav>
 
     <div id="view-calculator" class="view active">
@@ -121,66 +121,74 @@
         <h2>Cost Trend</h2>
         <div id="sparkline"></div>
       </div>
-    </section>
+      </section>
+      <div class="data-source">
+        💼 Salary data from <a href="https://www.levels.fyi/companies/microsoft/salaries" target="_blank" rel="noopener">Levels.fyi</a> (Microsoft, US-based, total compensation including base, stock, and bonus)
+      </div>
     </div> <!-- End view-calculator -->
 
     <!-- View: Agenda Auditor -->
     <div id="view-agenda" class="view hidden">
-      <section class="grid single-col">
+      <section class="grid">
         <div class="card">
-          <h2>Agenda Auditor 🕵️‍♂️</h2>
-          <p class="subhead">Paste your meeting invite or agenda below. AI will score its clarity and predict wasted time.</p>
+          <h2>Agenda Auditor</h2>
+          <p class="muted">Paste your agenda or invite to get a quick clarity signal.</p>
           <div class="form-group">
-            <textarea id="agendaInput" placeholder="Paste agenda or invite text here..." rows="8"></textarea>
+            <label for="agendaInput">Paste Meeting Agenda/Invite</label>
+            <textarea id="agendaInput" rows="8" placeholder="Agenda, attendees, goals..."></textarea>
           </div>
-          <button class="btn primary" id="auditBtn">Audit Agenda</button>
+          <div class="actions">
+            <button class="btn primary" id="agendaAuditBtn">Audit Agenda</button>
+          </div>
         </div>
-        <div class="card result-card hidden" id="agendaResult">
-          <h3>Audit Verdict</h3>
+        <div class="card hidden" id="agendaResultCard">
+          <h2>Audit Results</h2>
           <div class="summary-grid">
             <div class="summary-item">
               <div class="label">Clarity Score</div>
-              <div class="value" id="clarityScore">--</div>
+              <div class="value" id="agendaClarityScore">--</div>
             </div>
             <div class="summary-item">
-              <div class="label">Wasted Time</div>
-              <div class="value" id="wastedTime">--%</div>
+              <div class="label">Predicted Wasted Time</div>
+              <div class="value" id="agendaWastedTime">--</div>
+            </div>
+            <div class="summary-item">
+              <div class="label">Verdict</div>
+              <div class="value" id="agendaVerdict">--</div>
             </div>
           </div>
-          <p class="rate-note" id="agendaVerdictText"></p>
         </div>
       </section>
     </div>
 
     <!-- View: Value Analyzer -->
     <div id="view-value" class="view hidden">
-      <section class="grid single-col">
+      <section class="grid">
         <div class="card">
-          <h2>Value Analyzer 💎</h2>
-          <p class="subhead">Paste your meeting notes or transcript. We'll calculate the cost per action item.</p>
+          <h2>Value Analyzer</h2>
+          <p class="muted">Drop in notes or transcripts to estimate the tangible output.</p>
           <div class="form-group">
-            <textarea id="transcriptInput" placeholder="Paste meeting notes or transcript..." rows="8"></textarea>
+            <label for="valueInput">Paste Meeting Notes/Transcript</label>
+            <textarea id="valueInput" rows="8" placeholder="Meeting notes, transcript, action items..."></textarea>
           </div>
-          <button class="btn primary" id="analyzeBtn">Analyze Value</button>
+          <div class="actions">
+            <button class="btn primary" id="valueAnalyzeBtn">Analyze Value</button>
+          </div>
         </div>
-        <div class="card result-card hidden" id="valueResult">
-          <h3>Value Report</h3>
+        <div class="card hidden" id="valueResultCard">
+          <h2>Value Signals</h2>
           <div class="summary-grid">
             <div class="summary-item">
-              <div class="label">Action Items</div>
-              <div class="value" id="actionItemCount">--</div>
+              <div class="label">Action Items Detected</div>
+              <div class="value" id="valueActionItems">--</div>
             </div>
             <div class="summary-item">
-              <div class="label">Cost / Item</div>
-              <div class="value" id="costPerItem">--</div>
+              <div class="label">Cost per Action Item</div>
+              <div class="value" id="valueCostPerItem">--</div>
             </div>
           </div>
         </div>
       </section>
-    </div>
-
-    <div class="data-source">
-      💼 Salary data from <a href="https://www.levels.fyi/companies/microsoft/salaries" target="_blank" rel="noopener">Levels.fyi</a> (Microsoft, US-based, total compensation including base, stock, and bonus)
     </div>
   </div>
 

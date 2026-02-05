@@ -210,10 +210,10 @@ function displayRoiResults(result, meetingCost) {
   const wastedList = document.getElementById("roiWastedList");
   const wastedCard = document.getElementById("roiWastedCard");
   if (result.wastedTopics?.length > 0) {
-    wastedCard.style.display = "block";
+    wastedCard.classList.remove("hidden");
     wastedList.innerHTML = result.wastedTopics.map(t => `<li>⚠️ ${t}</li>`).join("");
   } else {
-    wastedCard.style.display = "none";
+    wastedCard.classList.add("hidden");
   }
 
   // Recommendations

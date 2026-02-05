@@ -282,6 +282,17 @@ input, select {
   align-items: center;
 }
 
+.summary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn.ghost.teams {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--accent-2);
+}
+
 .timer {
   font-size: 22px;
   font-weight: 700;
@@ -452,4 +463,86 @@ input, select {
   .header {
     flex-direction: column;
   }
+}
+
+/* Navigation */
+.app-nav {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nav-pill {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  padding: 8px 20px;
+  border-radius: 99px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-pill:hover {
+  color: var(--text);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.nav-pill.active {
+  background: var(--text);
+  color: var(--bg);
+}
+
+[data-theme="dark"] .nav-pill.active {
+  background: var(--accent);
+  color: white;
+}
+
+/* Views */
+.view {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.view.hidden {
+  display: none;
+  opacity: 0;
+}
+
+.grid.single-col {
+  grid-template-columns: 1fr;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+textarea {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.result-card {
+  margin-top: 24px;
+}
+
+.result-card h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 18px;
 }

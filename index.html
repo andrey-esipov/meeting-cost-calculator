@@ -20,18 +20,44 @@
       <button class="btn ghost" id="themeToggle" aria-label="Toggle theme">Toggle Theme</button>
     </header>
 
-    <section class="grid">
-      <div class="card">
+    <nav class="app-nav" aria-label="Views">
+      <button class="nav-pill active" data-view="view-calculator">Calculator</button>
+      <button class="nav-pill" data-view="view-agenda">Agenda Auditor</button>
+      <button class="nav-pill" data-view="view-value">Value Analyzer</button>
+    </nav>
+
+    <div id="view-calculator" class="view active">
+      <section class="grid">
+        <div class="card">
         <h2>Inputs</h2>
         <div class="form-group">
           <label for="duration">Planned meeting duration (minutes)</label>
           <input type="number" id="duration" min="1" value="30" />
+        </div>
+        <div class="form-group">
+          <label for="recurring">Recurring?</label>
+          <select id="recurring">
+            <option value="one-off" selected>One-off</option>
+            <option value="daily">Daily (x240)</option>
+            <option value="weekly">Weekly (x50)</option>
+            <option value="bi-weekly">Bi-weekly (x25)</option>
+            <option value="monthly">Monthly (x12)</option>
+          </select>
         </div>
 
         <div class="attendees">
           <div class="attendees-header">
             <h3>Attendees</h3>
             <button class="btn small" id="addRow">Add role</button>
+          </div>
+          <div class="quick-presets">
+            <div class="quick-presets__label">Quick Presets</div>
+            <div class="quick-presets__actions">
+              <button class="preset-chip" data-preset="triad">Feature Crew</button>
+              <button class="preset-chip" data-preset="spec-review">Spec Review</button>
+              <button class="preset-chip" data-preset="leadership">Leadership Review</button>
+              <button class="preset-chip" data-preset="all-hands">Team All Hands</button>
+            </div>
           </div>
           <div id="attendeeRows"></div>
         </div>
@@ -57,20 +83,32 @@
             <div class="label">Planned Total</div>
             <div class="value" id="plannedTotal">$0.00</div>
           </div>
+          <div class="summary-item annual-run-rate is-one-off">
+            <div class="label">Annual Run Rate</div>
+            <div class="value" id="annualRunRate">$0.00</div>
+          </div>
           <div class="summary-item">
             <div class="label">Live Cost</div>
             <div class="value live" id="liveCost">$0.00</div>
           </div>
         </div>
+        <p class="rate-note" id="rateNote"></p>
+        <div class="breakdown" id="breakdown"></div>
         <div class="timer-row">
-          <div class="timer" id="timer">00:00</div>
-          <button class="btn ghost" id="copyBtn">Copy Summary</button>
+          <div class="summary-actions">
+            <button class="btn ghost" id="copyBtn">Copy Summary</button>
+            <button class="btn ghost teams" id="copyTeamsBtn">📋 Copy for Teams</button>
+          </div>
         </div>
       </div>
 
-      <div class="card">
+      <div class="card ticker-card">
         <h2>Real-time Cost Ticker</h2>
         <div id="ticker" class="ticker"></div>
+        <div class="ticker-actions">
+          <div class="timer" id="timer">00:00</div>
+          <button class="btn danger hidden" id="stopBtn">Stop Meeting</button>
+        </div>
         <p class="muted">The ticker updates live as the meeting runs.</p>
       </div>
 
@@ -83,7 +121,107 @@
         <h2>Cost Trend</h2>
         <div id="sparkline"></div>
       </div>
-    </section>
+      </section>
+      <div class="data-source">
+        💼 Salary data from <a href="https://www.levels.fyi/companies/microsoft/salaries" target="_blank" rel="noopener">Levels.fyi</a> (Microsoft, US-based, total compensation including base, stock, and bonus)
+      </div>
+    </div> <!-- End view-calculator -->
+
+    <!-- View: Agenda Auditor -->
+    <div id="view-agenda" class="view hidden">
+      <section class="grid">
+        <div class="card">
+          <h2>Agenda Auditor</h2>
+          <p class="muted">Paste your agenda or invite to get a quick clarity signal.</p>
+          <div class="form-group">
+            <label for="agendaInput">Paste Meeting Agenda/Invite</label>
+            <textarea id="agendaInput" rows="8" placeholder="Agenda, attendees, goals..."></textarea>
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="agendaAuditBtn">Audit Agenda</button>
+          </div>
+        </div>
+        <div class="card hidden" id="agendaResultCard">
+          <h2>Audit Results</h2>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="label">Clarity Score</div>
+              <div class="value" id="agendaClarityScore">--</div>
+            </div>
+            <div class="summary-item">
+              <div class="label">Predicted Wasted Time</div>
+              <div class="value" id="agendaWastedTime">--</div>
+            </div>
+            <div class="summary-item">
+              <div class="label">Verdict</div>
+              <div class="value" id="agendaVerdict">--</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- View: Value Analyzer -->
+    <div id="view-value" class="view hidden">
+      <section class="grid">
+        <div class="card">
+          <h2>Value Analyzer</h2>
+          <p class="muted">Drop in notes or transcripts to estimate the tangible output.</p>
+          <div class="form-group">
+            <label for="valueInput">Paste Meeting Notes/Transcript</label>
+            <textarea id="valueInput" rows="8" placeholder="Meeting notes, transcript, action items..."></textarea>
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="valueAnalyzeBtn">Analyze Value</button>
+          </div>
+        </div>
+        <div class="card hidden" id="valueResultCard">
+          <h2>Value Signals</h2>
+          <div class="summary-grid">
+            <div class="summary-item">
+              <div class="label">Action Items Detected</div>
+              <div class="value" id="valueActionItems">--</div>
+            </div>
+            <div class="summary-item">
+              <div class="label">Cost per Action Item</div>
+              <div class="value" id="valueCostPerItem">--</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="summaryModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
+      <div class="modal-header">
+        <h2 id="summaryTitle">Meeting Complete! 🎉</h2>
+        <p class="muted">Here’s the damage report.</p>
+      </div>
+      <div class="modal-stats">
+        <div class="stat">
+          <span class="label">Duration</span>
+          <span class="value" id="summaryDuration">0 minutes</span>
+        </div>
+        <div class="stat">
+          <span class="label">Attendees</span>
+          <span class="value" id="summaryAttendees">0 people</span>
+        </div>
+        <div class="stat">
+          <span class="label">Total Cost</span>
+          <span class="value" id="summaryCost">$0.00</span>
+        </div>
+      </div>
+      <div class="modal-section">
+        <h3>What you could buy instead</h3>
+        <ul id="summaryAlternatives" class="alternatives"></ul>
+      </div>
+      <div class="modal-section fun-fact" id="summaryFact"></div>
+      <div class="modal-actions">
+        <button class="btn primary" id="saveMeetingBtn">Save to Weekly Log</button>
+        <button class="btn" id="dismissModalBtn">Dismiss</button>
+      </div>
+    </div>
   </div>
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -93,3 +231,4 @@
   <script src="js/app.js"></script>
 </body>
 </html>
+<!-- force rebuild -->

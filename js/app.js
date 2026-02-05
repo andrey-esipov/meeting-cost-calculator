@@ -405,40 +405,6 @@ function copyForTeams() {
   const rows = getRows();
   const duration = Number(durationInput.value || 0);
   const totals = computeTotals(rows, duration);
-  const totalCost = totals.plannedTotal;
-  const recurringMultiplier = getRecurringMultiplier();
-  const annualRunRate = recurringMultiplier ? totalCost * recurringMultiplier : 0;
-  const alternative = getAlternatives(totalCost)[0];
-
-  const lines = [
-    "**📉 Meeting Cost Report**",
-    "---",
-    `**💸 Total Cost:** ${formatCurrency(totalCost)}`,
-    `**⏱ Duration:** ${duration} min`,
-    `**👥 Attendees:** ${totals.totalAttendees}`
-  ];
-
-  if (annualRunRate) {
-    lines.push("---");
-    lines.push(`*Annual Run Rate:* ${formatCurrency(annualRunRate)}`);
-  }
-
-  lines.push("---");
-  lines.push(`💡 *Alternative: ${alternative}.*`);
-
-  const text = lines.join("\n");
-
-  navigator.clipboard.writeText(text).then(() => {
-    const originalText = copyTeamsBtn.textContent;
-    copyTeamsBtn.textContent = "Copied for Teams!";
-    setTimeout(() => (copyTeamsBtn.textContent = originalText), 1200);
-  });
-}
-
-function copyForTeams() {
-  const rows = getRows();
-  const duration = Number(durationInput.value || 0);
-  const totals = computeTotals(rows, duration);
   
   // Get alternative text
   const alternatives = getAlternatives(totals.plannedTotal);
@@ -574,9 +540,8 @@ stopBtn.addEventListener("click", stopMeeting);
 resetBtn.addEventListener("click", resetMeeting);
 copyBtn.addEventListener("click", copySummary);
 copyTeamsBtn.addEventListener("click", copyForTeams);
-copyTeamsBtn.addEventListener("click", copyForTeams);
 themeToggle.addEventListener("click", toggleTheme);
-viewTabs.forEach(tab =>
+navPills.forEach(tab =>
   tab.addEventListener("click", () => switchView(tab.dataset.view))
 );
 agendaAuditBtn?.addEventListener("click", runAgendaAudit);
@@ -595,90 +560,3 @@ initDonut(getHistoryDonutData(initialHistory) || getDonutData(0));
 initSparkline(getHistorySparklineData(initialHistory) || getSparklineData(0));
 updateSummary();
 
-// Navigation Logic
-const navPills = document.querySelectorAll(".view-tab");
-const views = document.querySelectorAll(".view");
-
-navPills.forEach(pill => {
-  pill.addEventListener("click", () => {
-    // Update pills
-    navPills.forEach(p => p.classList.remove("active"));
-    pill.classList.add("active");
-
-    // Update views
-    const targetId = pill.dataset.view;
-    views.forEach(view => {
-      view.classList.add("hidden");
-      view.classList.remove("active");
-    });
-    const targetView = document.getElementById(targetId);
-    targetView.classList.remove("hidden");
-    // Small timeout for opacity transition if we added it
-    setTimeout(() => targetView.classList.add("active"), 10);
-  });
-});
-
-// Mock AI Logic: Agenda Auditor
-const auditBtn = document.getElementById("auditBtn");
-const agendaResult = document.getElementById("agendaResult");
-const clarityScoreEl = document.getElementById("clarityScore");
-const wastedTimeEl = document.getElementById("wastedTime");
-const agendaVerdictText = document.getElementById("agendaVerdictText");
-
-if (auditBtn) {
-  auditBtn.addEventListener("click", () => {
-    const originalText = auditBtn.textContent;
-    auditBtn.textContent = "Analyzing with AI...";
-    auditBtn.disabled = true;
-
-    // Mock API call delay
-    setTimeout(() => {
-      auditBtn.textContent = originalText;
-      auditBtn.disabled = false;
-      agendaResult.classList.remove("hidden");
-
-      // Random mock data
-      const score = Math.floor(Math.random() * (95 - 40) + 40);
-      const wasted = Math.floor(Math.random() * (60 - 10) + 10);
-      
-      clarityScoreEl.textContent = score;
-      wastedTimeEl.textContent = `${wasted}%`;
-      
-      let verdict = "";
-      if (score > 80) verdict = "✅ This agenda is crisp. Good to go.";
-      else if (score > 50) verdict = "⚠️ Vague topics detected. 30% chance of 'circling back'.";
-      else verdict = "🚨 Total chaos. Recommended action: Cancel meeting.";
-      
-      agendaVerdictText.textContent = verdict;
-    }, 1500);
-  });
-}
-
-// Mock AI Logic: Value Analyzer
-const analyzeBtn = document.getElementById("analyzeBtn");
-const valueResult = document.getElementById("valueResult");
-const actionItemCountEl = document.getElementById("actionItemCount");
-const costPerItemEl = document.getElementById("costPerItem");
-
-if (analyzeBtn) {
-  analyzeBtn.addEventListener("click", () => {
-    const originalText = analyzeBtn.textContent;
-    analyzeBtn.textContent = "Calculating Value...";
-    analyzeBtn.disabled = true;
-
-    setTimeout(() => {
-      analyzeBtn.textContent = originalText;
-      analyzeBtn.disabled = false;
-      valueResult.classList.remove("hidden");
-
-      // Random mock data
-      const items = Math.floor(Math.random() * 6);
-      // Use current meeting cost logic if available, else random
-      const cost = 1250; 
-      const costPer = items > 0 ? (cost / items).toFixed(0) : cost;
-
-      actionItemCountEl.textContent = items;
-      costPerItemEl.textContent = `$${costPer}`;
-    }, 1500);
-  });
-}

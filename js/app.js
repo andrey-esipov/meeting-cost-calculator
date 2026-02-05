@@ -26,7 +26,7 @@ const summaryFactEl = document.getElementById("summaryFact");
 const saveMeetingBtn = document.getElementById("saveMeetingBtn");
 const dismissModalBtn = document.getElementById("dismissModalBtn");
 
-const navPills = document.querySelectorAll(".nav-pill");
+const navPills = document.querySelectorAll(".view-tab");
 const navContainer = document.querySelector(".app-nav");
 const views = document.querySelectorAll(".view");
 const agendaInput = document.getElementById("agendaInput");
@@ -596,7 +596,7 @@ initSparkline(getHistorySparklineData(initialHistory) || getSparklineData(0));
 updateSummary();
 
 // Navigation Logic
-const navPills = document.querySelectorAll(".nav-pill");
+const navPills = document.querySelectorAll(".view-tab");
 const views = document.querySelectorAll(".view");
 
 navPills.forEach(pill => {

@@ -25,12 +25,105 @@ const summaryAlternativesEl = document.getElementById("summaryAlternatives");
 const summaryFactEl = document.getElementById("summaryFact");
 const saveMeetingBtn = document.getElementById("saveMeetingBtn");
 const dismissModalBtn = document.getElementById("dismissModalBtn");
+
+const navPills = document.querySelectorAll(".nav-pill");
+const navContainer = document.querySelector(".app-nav");
+const views = document.querySelectorAll(".view");
+const agendaInput = document.getElementById("agendaInput");
+const agendaAuditBtn = document.getElementById("agendaAuditBtn");
+const agendaResultCard = document.getElementById("agendaResultCard");
+const agendaClarityScore = document.getElementById("agendaClarityScore");
+const agendaWastedTime = document.getElementById("agendaWastedTime");
+const agendaVerdict = document.getElementById("agendaVerdict");
+const valueInput = document.getElementById("valueInput");
+const valueAnalyzeBtn = document.getElementById("valueAnalyzeBtn");
+const valueResultCard = document.getElementById("valueResultCard");
+const valueActionItems = document.getElementById("valueActionItems");
+const valueCostPerItem = document.getElementById("valueCostPerItem");
 // Remove direct selection to avoid timing issues
 // const presetButtons = document.querySelectorAll(".preset-chip");
 
 let meetingTimer = null;
 let elapsedSeconds = 0;
 let perMinute = 0;
+
+function switchView(viewId) {
+  views.forEach(view => {
+    const isActive = view.id === viewId;
+    view.classList.toggle("active", isActive);
+    view.classList.toggle("hidden", !isActive);
+  });
+
+  navPills.forEach(pill => {
+    pill.classList.toggle("active", pill.dataset.view === viewId);
+  });
+}
+
+const agendaVerdicts = [
+  "This meeting could be an email.",
+  "Clarify the goal before you book this.",
+  "Promising agenda, keep it tight.",
+  "Clear and purposeful — worth meeting.",
+  "High risk of rambling. Add owners."
+];
+
+function mockAgendaAudit(text) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const clarity = Math.floor(40 + Math.random() * 60);
+      const wasted = Math.floor(10 + Math.random() * 70);
+      const verdict = agendaVerdicts[Math.floor(Math.random() * agendaVerdicts.length)];
+      resolve({ clarity, wasted, verdict, text });
+    }, 1500);
+  });
+}
+
+function mockValueAnalysis(text) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const actionItems = Math.floor(Math.random() * 6) + 1;
+      const mockTotalCost = 200 + Math.random() * 1200;
+      resolve({ actionItems, mockTotalCost, text });
+    }, 1500);
+  });
+}
+
+async function runAgendaAudit() {
+  if (!agendaAuditBtn) return;
+  const originalText = agendaAuditBtn.textContent;
+  agendaAuditBtn.textContent = "Auditing...";
+  agendaAuditBtn.disabled = true;
+  agendaResultCard?.classList.remove("hidden");
+  if (agendaClarityScore) agendaClarityScore.textContent = "...";
+  if (agendaWastedTime) agendaWastedTime.textContent = "...";
+  if (agendaVerdict) agendaVerdict.textContent = "...";
+
+  const result = await mockAgendaAudit(agendaInput?.value || "");
+  if (agendaClarityScore) agendaClarityScore.textContent = `${result.clarity}/100`;
+  if (agendaWastedTime) agendaWastedTime.textContent = `${result.wasted}%`;
+  if (agendaVerdict) agendaVerdict.textContent = result.verdict;
+
+  agendaAuditBtn.textContent = originalText;
+  agendaAuditBtn.disabled = false;
+}
+
+async function runValueAnalysis() {
+  if (!valueAnalyzeBtn) return;
+  const originalText = valueAnalyzeBtn.textContent;
+  valueAnalyzeBtn.textContent = "Analyzing...";
+  valueAnalyzeBtn.disabled = true;
+  valueResultCard?.classList.remove("hidden");
+  if (valueActionItems) valueActionItems.textContent = "...";
+  if (valueCostPerItem) valueCostPerItem.textContent = "...";
+
+  const result = await mockValueAnalysis(valueInput?.value || "");
+  const costPerItem = result.actionItems ? result.mockTotalCost / result.actionItems : 0;
+  if (valueActionItems) valueActionItems.textContent = `${result.actionItems}`;
+  if (valueCostPerItem) valueCostPerItem.textContent = formatCurrency(costPerItem);
+
+  valueAnalyzeBtn.textContent = originalText;
+  valueAnalyzeBtn.disabled = false;
+}
 
 function handlePreset(target) {
   const preset = target.dataset.preset;
@@ -483,6 +576,11 @@ copyBtn.addEventListener("click", copySummary);
 copyTeamsBtn.addEventListener("click", copyForTeams);
 copyTeamsBtn.addEventListener("click", copyForTeams);
 themeToggle.addEventListener("click", toggleTheme);
+viewTabs.forEach(tab =>
+  tab.addEventListener("click", () => switchView(tab.dataset.view))
+);
+agendaAuditBtn?.addEventListener("click", runAgendaAudit);
+valueAnalyzeBtn?.addEventListener("click", runValueAnalysis);
 saveMeetingBtn.addEventListener("click", saveMeetingToHistory);
 dismissModalBtn.addEventListener("click", hideSummaryModal);
 summaryModal.addEventListener("click", event => {

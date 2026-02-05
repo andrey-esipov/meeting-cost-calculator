@@ -13,11 +13,12 @@
   <div class="app" id="app">
     <header class="header">
       <div>
-        <div class="eyebrow">Productivity Toolkit</div>
         <h1>💸 Meeting Cost Calculator</h1>
-        <p class="subhead">Understand the real-time cost of meetings and optimize your team’s time.</p>
       </div>
-      <button class="btn ghost" id="themeToggle" aria-label="Toggle theme">Toggle Theme</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span class="theme-icon sun">☀️</span>
+        <span class="theme-icon moon">🌙</span>
+      </button>
     </header>
 
     <nav class="view-nav" aria-label="Views">
@@ -26,101 +27,77 @@
     </nav>
 
     <div id="view-calculator" class="view active">
-      <section class="grid">
-        <div class="card">
-        <h2>Inputs</h2>
-        <div class="form-group">
-          <label for="duration">Planned meeting duration (minutes)</label>
-          <input type="number" id="duration" min="1" value="30" />
-        </div>
-        <div class="form-group">
-          <label for="recurring">Recurring?</label>
-          <select id="recurring">
-            <option value="one-off" selected>One-off</option>
-            <option value="daily">Daily (x240)</option>
-            <option value="weekly">Weekly (x50)</option>
-            <option value="bi-weekly">Bi-weekly (x25)</option>
-            <option value="monthly">Monthly (x12)</option>
-          </select>
-        </div>
-
-        <div class="attendees">
-          <div class="attendees-header">
-            <h3>Attendees</h3>
-            <button class="btn small" id="addRow">Add role</button>
-          </div>
-          <div class="quick-presets">
-            <div class="quick-presets__label">Quick Presets</div>
-            <div class="quick-presets__actions">
-              <button class="preset-chip" data-preset="triad">Feature Crew</button>
-              <button class="preset-chip" data-preset="spec-review">Spec Review</button>
-              <button class="preset-chip" data-preset="leadership">Leadership Review</button>
-              <button class="preset-chip" data-preset="all-hands">Team All Hands</button>
+      <section class="calc-layout">
+        <!-- Left: Inputs -->
+        <div class="card calc-inputs">
+          <div class="calc-row">
+            <div class="form-group compact">
+              <label for="duration">Duration (min)</label>
+              <input type="number" id="duration" min="1" value="30" />
+            </div>
+            <div class="form-group compact">
+              <label for="recurring">Recurring</label>
+              <select id="recurring">
+                <option value="one-off" selected>One-off</option>
+                <option value="daily">Daily (x240)</option>
+                <option value="weekly">Weekly (x50)</option>
+                <option value="bi-weekly">Bi-weekly (x25)</option>
+                <option value="monthly">Monthly (x12)</option>
+              </select>
             </div>
           </div>
-          <div id="attendeeRows"></div>
+
+          <div class="attendees-section">
+            <div class="attendees-header">
+              <span class="attendees-label">Attendees</span>
+              <button class="btn small" id="addRow">+ Add</button>
+            </div>
+            <div class="quick-presets">
+              <button class="preset-chip" data-preset="triad">Feature Crew</button>
+              <button class="preset-chip" data-preset="spec-review">Spec Review</button>
+              <button class="preset-chip" data-preset="leadership">Leadership</button>
+              <button class="preset-chip" data-preset="all-hands">All Hands</button>
+            </div>
+            <div id="attendeeRows" class="attendee-rows-compact"></div>
+          </div>
+
+          <div class="calc-actions">
+            <button class="btn primary" id="startBtn">Start Meeting</button>
+            <button class="btn" id="resetBtn">Reset</button>
+          </div>
         </div>
 
-        <div class="actions">
-          <button class="btn primary" id="startBtn">Start Meeting</button>
-          <button class="btn" id="resetBtn">Reset</button>
-        </div>
-      </div>
+        <!-- Right: Summary + Live Ticker -->
+        <div class="calc-right">
+          <div class="card calc-summary">
+            <div class="summary-metrics">
+              <div class="metric"><span class="metric-label">Per Min</span><span class="metric-value" id="perMinute">$0</span></div>
+              <div class="metric"><span class="metric-label">Per Hour</span><span class="metric-value" id="perHour">$0</span></div>
+              <div class="metric"><span class="metric-label">Total</span><span class="metric-value highlight" id="plannedTotal">$0</span></div>
+              <div class="metric annual-run-rate is-one-off"><span class="metric-label">Annual</span><span class="metric-value" id="annualRunRate">$0</span></div>
+            </div>
+            <div class="breakdown" id="breakdown"></div>
+            <div class="summary-actions-row">
+              <button class="btn small ghost" id="copyBtn">Copy</button>
+              <button class="btn small ghost teams" id="copyTeamsBtn">Teams</button>
+            </div>
+          </div>
 
-      <div class="card summary-card">
-        <h2>Summary</h2>
-        <div class="summary-grid">
-          <div class="summary-item">
-            <div class="label">Per Minute</div>
-            <div class="value" id="perMinute">$0.00</div>
-          </div>
-          <div class="summary-item">
-            <div class="label">Per Hour</div>
-            <div class="value" id="perHour">$0.00</div>
-          </div>
-          <div class="summary-item">
-            <div class="label">Planned Total</div>
-            <div class="value" id="plannedTotal">$0.00</div>
-          </div>
-          <div class="summary-item annual-run-rate is-one-off">
-            <div class="label">Annual Run Rate</div>
-            <div class="value" id="annualRunRate">$0.00</div>
-          </div>
-          <div class="summary-item">
-            <div class="label">Live Cost</div>
-            <div class="value live" id="liveCost">$0.00</div>
+          <div class="card calc-ticker">
+            <div class="ticker-display">
+              <div id="ticker" class="ticker-value">$0.00</div>
+              <div class="timer" id="timer">00:00</div>
+            </div>
+            <div class="live-label">
+              <span class="live-dot"></span> Live Cost
+              <button class="btn small danger hidden" id="stopBtn">Stop</button>
+            </div>
           </div>
         </div>
-        <p class="rate-note" id="rateNote"></p>
-        <div class="breakdown" id="breakdown"></div>
-        <div class="timer-row">
-          <div class="summary-actions">
-            <button class="btn ghost" id="copyBtn">Copy Summary</button>
-            <button class="btn ghost teams" id="copyTeamsBtn">📋 Copy for Teams</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card ticker-card">
-        <h2>Real-time Cost Ticker</h2>
-        <div id="ticker" class="ticker"></div>
-        <div class="ticker-actions">
-          <div class="timer" id="timer">00:00</div>
-          <button class="btn danger hidden" id="stopBtn">Stop Meeting</button>
-        </div>
-        <p class="muted">The ticker updates live as the meeting runs.</p>
-      </div>
-
-      <div class="card">
-        <h2>Weekly Meeting Cost Breakdown</h2>
-        <div id="donut"></div>
-      </div>
-
-      <div class="card">
-        <h2>Cost Trend</h2>
-        <div id="sparkline"></div>
-      </div>
       </section>
+      <p class="rate-note" id="rateNote"></p>
+      <div id="donut" class="hidden"></div>
+      <div id="sparkline" class="hidden"></div>
       <div class="data-source">
         💼 Salary data from <a href="https://www.levels.fyi/companies/microsoft/salaries" target="_blank" rel="noopener">Levels.fyi</a> (Microsoft, US-based, total compensation including base, stock, and bonus)
       </div>

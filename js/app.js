@@ -296,6 +296,29 @@ function copySummary() {
   });
 }
 
+function copyForTeams() {
+  const rows = getRows();
+  const duration = Number(durationInput.value || 0);
+  const totals = computeTotals(rows, duration);
+  
+  // Get alternative text
+  const alternatives = getAlternatives(totals.plannedTotal);
+  const randomAlt = alternatives[Math.floor(Math.random() * alternatives.length)];
+  
+  // Format for Teams (Markdown)
+  const text = `### 📉 Meeting Cost Report\n` +
+    `**💸 Total Cost:** ${formatCurrency(totals.plannedTotal)}\n` +
+    `**⏱ Duration:** ${duration} min\n` +
+    `**👥 Attendees:** ${totals.totalAttendees}\n\n` +
+    `💡 *Alternative: ${randomAlt}*`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const originalText = copyTeamsBtn.textContent;
+    copyTeamsBtn.textContent = "Copied!";
+    setTimeout(() => (copyTeamsBtn.textContent = originalText), 1200);
+  });
+}
+
 function getAlternatives(cost) {
   if (cost < 50) {
     const cups = Math.max(1, Math.round(cost / 5));
@@ -411,6 +434,7 @@ startBtn.addEventListener("click", startMeeting);
 stopBtn.addEventListener("click", stopMeeting);
 resetBtn.addEventListener("click", resetMeeting);
 copyBtn.addEventListener("click", copySummary);
+copyTeamsBtn.addEventListener("click", copyForTeams);
 themeToggle.addEventListener("click", toggleTheme);
 saveMeetingBtn.addEventListener("click", saveMeetingToHistory);
 dismissModalBtn.addEventListener("click", hideSummaryModal);

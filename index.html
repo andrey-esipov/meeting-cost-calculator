@@ -22,8 +22,7 @@
 
     <nav class="view-nav" aria-label="Views">
       <button class="view-tab active" data-view="view-calculator">Calculator</button>
-      <button class="view-tab" data-view="view-agenda">Agenda Auditor</button>
-      <button class="view-tab" data-view="view-value">Value Analyzer</button>
+      <button class="view-tab" data-view="view-roi">Meeting ROI</button>
     </nav>
 
     <div id="view-calculator" class="view active">
@@ -127,65 +126,131 @@
       </div>
     </div> <!-- End view-calculator -->
 
-    <!-- View: Agenda Auditor -->
-    <div id="view-agenda" class="view hidden">
-      <section class="grid">
-        <div class="card">
-          <h2>Agenda Auditor</h2>
-          <p class="muted">Paste your agenda or invite to get a quick clarity signal.</p>
-          <div class="form-group">
-            <label for="agendaInput">Paste Meeting Agenda/Invite</label>
-            <textarea id="agendaInput" rows="8" placeholder="Agenda, attendees, goals..."></textarea>
-          </div>
-          <div class="actions">
-            <button class="btn primary" id="agendaAuditBtn">Audit Agenda</button>
-          </div>
-        </div>
-        <div class="card hidden" id="agendaResultCard">
-          <h2>Audit Results</h2>
-          <div class="summary-grid">
-            <div class="summary-item">
-              <div class="label">Clarity Score</div>
-              <div class="value" id="agendaClarityScore">--</div>
+    <!-- View: Meeting ROI Analyzer -->
+    <div id="view-roi" class="view hidden">
+      <section class="roi-layout">
+        <!-- Input Section -->
+        <div class="roi-inputs">
+          <div class="card">
+            <div class="roi-input-header">
+              <span class="roi-step">1</span>
+              <div>
+                <h3>Before the Meeting</h3>
+                <p class="muted">Paste the calendar invite or agenda</p>
+              </div>
             </div>
-            <div class="summary-item">
-              <div class="label">Predicted Wasted Time</div>
-              <div class="value" id="agendaWastedTime">--</div>
-            </div>
-            <div class="summary-item">
-              <div class="label">Verdict</div>
-              <div class="value" id="agendaVerdict">--</div>
+            <textarea id="roiAgendaInput" rows="6" placeholder="Subject: Weekly Sync&#10;Attendees: John, Sarah, Mike&#10;Agenda:&#10;- Review last week's progress&#10;- Discuss blockers&#10;- Plan next steps"></textarea>
+            <div class="quick-check-row">
+              <button class="btn small ghost" id="quickCheckBtn">Quick Check</button>
+              <span class="quick-check-result" id="quickCheckResult"></span>
             </div>
           </div>
-        </div>
-      </section>
-    </div>
 
-    <!-- View: Value Analyzer -->
-    <div id="view-value" class="view hidden">
-      <section class="grid">
-        <div class="card">
-          <h2>Value Analyzer</h2>
-          <p class="muted">Drop in notes or transcripts to estimate the tangible output.</p>
-          <div class="form-group">
-            <label for="valueInput">Paste Meeting Notes/Transcript</label>
-            <textarea id="valueInput" rows="8" placeholder="Meeting notes, transcript, action items..."></textarea>
+          <div class="card">
+            <div class="roi-input-header">
+              <span class="roi-step">2</span>
+              <div>
+                <h3>After the Meeting</h3>
+                <p class="muted">Paste notes, transcript, or summary</p>
+              </div>
+            </div>
+            <textarea id="roiNotesInput" rows="6" placeholder="Meeting notes:&#10;- Discussed Q1 roadmap&#10;- John to send proposal by Friday&#10;- Sarah will review budget&#10;- Decided to postpone feature X&#10;- Next sync scheduled for Tuesday"></textarea>
           </div>
-          <div class="actions">
-            <button class="btn primary" id="valueAnalyzeBtn">Analyze Value</button>
+
+          <div class="card roi-cost-card">
+            <div class="roi-input-header">
+              <span class="roi-step">3</span>
+              <div>
+                <h3>Meeting Cost</h3>
+                <p class="muted">From calculator or enter manually</p>
+              </div>
+            </div>
+            <div class="roi-cost-input">
+              <span class="roi-cost-currency">$</span>
+              <input type="number" id="roiCostInput" value="0" min="0" step="50" />
+              <button class="btn small" id="pullFromCalc">Pull from Calculator</button>
+            </div>
           </div>
+
+          <button class="btn primary roi-analyze-btn" id="analyzeRoiBtn">
+            <span class="btn-text">Analyze Meeting ROI</span>
+            <span class="btn-loading hidden">Analyzing with AI...</span>
+          </button>
         </div>
-        <div class="card hidden" id="valueResultCard">
-          <h2>Value Signals</h2>
-          <div class="summary-grid">
-            <div class="summary-item">
-              <div class="label">Action Items Detected</div>
-              <div class="value" id="valueActionItems">--</div>
+
+        <!-- Results Section -->
+        <div class="roi-results hidden" id="roiResults">
+          <div class="card roi-verdict-card">
+            <div class="roi-verdict-header">
+              <span class="roi-verdict-icon" id="roiVerdictIcon">📊</span>
+              <div class="roi-verdict-text" id="roiVerdictText">Analyzing...</div>
             </div>
-            <div class="summary-item">
-              <div class="label">Cost per Action Item</div>
-              <div class="value" id="valueCostPerItem">--</div>
+            <div class="roi-verdict-subtext" id="roiVerdictSubtext"></div>
+          </div>
+
+          <div class="roi-metrics">
+            <div class="roi-metric">
+              <div class="roi-metric-value" id="roiClarity">--</div>
+              <div class="roi-metric-label">Clarity Score</div>
+              <div class="roi-metric-bar"><div class="roi-metric-fill" id="roiClarityBar"></div></div>
             </div>
+            <div class="roi-metric">
+              <div class="roi-metric-value" id="roiOnTopic">--</div>
+              <div class="roi-metric-label">On-Topic</div>
+              <div class="roi-metric-bar"><div class="roi-metric-fill" id="roiOnTopicBar"></div></div>
+            </div>
+            <div class="roi-metric">
+              <div class="roi-metric-value" id="roiActionCount">--</div>
+              <div class="roi-metric-label">Action Items</div>
+            </div>
+            <div class="roi-metric">
+              <div class="roi-metric-value" id="roiDecisionCount">--</div>
+              <div class="roi-metric-label">Decisions</div>
+            </div>
+          </div>
+
+          <div class="roi-cost-breakdown">
+            <div class="roi-cost-item">
+              <span class="roi-cost-label">Cost per Action Item</span>
+              <span class="roi-cost-value" id="roiCostPerAction">--</span>
+            </div>
+            <div class="roi-cost-item">
+              <span class="roi-cost-label">Cost per Decision</span>
+              <span class="roi-cost-value" id="roiCostPerDecision">--</span>
+            </div>
+          </div>
+
+          <div class="card roi-details-card">
+            <h3>Action Items Identified</h3>
+            <ul class="roi-action-list" id="roiActionList">
+              <li class="roi-action-empty">No action items detected</li>
+            </ul>
+          </div>
+
+          <div class="card roi-details-card">
+            <h3>Decisions Made</h3>
+            <ul class="roi-decision-list" id="roiDecisionList">
+              <li class="roi-decision-empty">No decisions detected</li>
+            </ul>
+          </div>
+
+          <div class="card roi-details-card" id="roiWastedCard">
+            <h3>Off-Topic / Wasted Time</h3>
+            <ul class="roi-wasted-list" id="roiWastedList">
+              <li class="roi-wasted-empty">Nothing flagged</li>
+            </ul>
+          </div>
+
+          <div class="card roi-details-card">
+            <h3>Recommendations</h3>
+            <ul class="roi-rec-list" id="roiRecList">
+              <li>Run the analysis to get recommendations</li>
+            </ul>
+          </div>
+
+          <div class="roi-actions">
+            <button class="btn ghost" id="copyRoiReport">Copy Report</button>
+            <button class="btn ghost teams" id="shareRoiTeams">Share to Teams</button>
           </div>
         </div>
       </section>
@@ -228,6 +293,7 @@
   <script src="js/data.js"></script>
   <script src="js/calculator.js"></script>
   <script src="js/charts.js"></script>
+  <script src="js/ai.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

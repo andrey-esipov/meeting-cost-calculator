@@ -29,19 +29,15 @@ const dismissModalBtn = document.getElementById("dismissModalBtn");
 const navPills = document.querySelectorAll(".view-tab");
 const navContainer = document.querySelector(".app-nav");
 const views = document.querySelectorAll(".view");
-const agendaInput = document.getElementById("agendaInput");
-const agendaAuditBtn = document.getElementById("agendaAuditBtn");
-const agendaResultCard = document.getElementById("agendaResultCard");
-const agendaClarityScore = document.getElementById("agendaClarityScore");
-const agendaWastedTime = document.getElementById("agendaWastedTime");
-const agendaVerdict = document.getElementById("agendaVerdict");
-const valueInput = document.getElementById("valueInput");
-const valueAnalyzeBtn = document.getElementById("valueAnalyzeBtn");
-const valueResultCard = document.getElementById("valueResultCard");
-const valueActionItems = document.getElementById("valueActionItems");
-const valueCostPerItem = document.getElementById("valueCostPerItem");
-// Remove direct selection to avoid timing issues
-// const presetButtons = document.querySelectorAll(".preset-chip");
+// ROI Analyzer elements
+const roiAgendaInput = document.getElementById("roiAgendaInput");
+const roiNotesInput = document.getElementById("roiNotesInput");
+const roiCostInput = document.getElementById("roiCostInput");
+const quickCheckBtn = document.getElementById("quickCheckBtn");
+const quickCheckResult = document.getElementById("quickCheckResult");
+const pullFromCalcBtn = document.getElementById("pullFromCalc");
+const analyzeRoiBtn = document.getElementById("analyzeRoiBtn");
+const roiResults = document.getElementById("roiResults");
 
 let meetingTimer = null;
 let elapsedSeconds = 0;
@@ -59,70 +55,236 @@ function switchView(viewId) {
   });
 }
 
-const agendaVerdicts = [
-  "This meeting could be an email.",
-  "Clarify the goal before you book this.",
-  "Promising agenda, keep it tight.",
-  "Clear and purposeful — worth meeting.",
-  "High risk of rambling. Add owners."
-];
+// ROI Analyzer Functions
+async function runQuickCheck() {
+  if (!quickCheckBtn || !roiAgendaInput) return;
 
-function mockAgendaAudit(text) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      const clarity = Math.floor(40 + Math.random() * 60);
-      const wasted = Math.floor(10 + Math.random() * 70);
-      const verdict = agendaVerdicts[Math.floor(Math.random() * agendaVerdicts.length)];
-      resolve({ clarity, wasted, verdict, text });
-    }, 1500);
+  const agendaText = roiAgendaInput.value.trim();
+  if (!agendaText) {
+    quickCheckResult.textContent = "Paste an agenda first";
+    quickCheckResult.className = "quick-check-result warn";
+    return;
+  }
+
+  quickCheckBtn.disabled = true;
+  quickCheckBtn.textContent = "Checking...";
+  quickCheckResult.textContent = "";
+
+  try {
+    const result = await quickAgendaCheck(agendaText);
+
+    let className = "quick-check-result ";
+    if (result.clarityScore >= 70) className += "good";
+    else if (result.clarityScore >= 40) className += "warn";
+    else className += "bad";
+
+    quickCheckResult.className = className;
+    quickCheckResult.textContent = `${result.clarityScore}/100 — ${result.quickVerdict}`;
+  } catch (error) {
+    quickCheckResult.className = "quick-check-result bad";
+    quickCheckResult.textContent = "Error: " + error.message;
+  }
+
+  quickCheckBtn.disabled = false;
+  quickCheckBtn.textContent = "Quick Check";
+}
+
+function pullCostFromCalculator() {
+  const rows = getRows();
+  const duration = Number(durationInput.value || 0);
+  const totals = computeTotals(rows, duration);
+  roiCostInput.value = Math.round(totals.plannedTotal);
+}
+
+async function runRoiAnalysis() {
+  if (!analyzeRoiBtn) return;
+
+  const agendaText = roiAgendaInput?.value?.trim() || "";
+  const notesText = roiNotesInput?.value?.trim() || "";
+  const meetingCost = Number(roiCostInput?.value) || 0;
+
+  if (!agendaText && !notesText) {
+    alert("Please paste an agenda or meeting notes to analyze.");
+    return;
+  }
+
+  // Show loading state
+  analyzeRoiBtn.classList.add("loading");
+  analyzeRoiBtn.disabled = true;
+  roiResults.classList.remove("hidden");
+  roiResults.classList.add("loading");
+
+  // Reset display
+  document.getElementById("roiVerdictIcon").textContent = "⏳";
+  document.getElementById("roiVerdictText").textContent = "Analyzing with AI...";
+  document.getElementById("roiVerdictSubtext").textContent = "This may take a few seconds";
+
+  try {
+    const result = await analyzeMeetingROI(agendaText, notesText, meetingCost);
+    displayRoiResults(result, meetingCost);
+  } catch (error) {
+    console.error("ROI Analysis error:", error);
+    document.getElementById("roiVerdictIcon").textContent = "❌";
+    document.getElementById("roiVerdictText").textContent = "Analysis Failed";
+    document.getElementById("roiVerdictSubtext").textContent = error.message;
+  }
+
+  analyzeRoiBtn.classList.remove("loading");
+  analyzeRoiBtn.disabled = false;
+  roiResults.classList.remove("loading");
+}
+
+function displayRoiResults(result, meetingCost) {
+  // Verdict icon based on analysis
+  const icon = result.couldBeEmail ? "📧" :
+               result.clarityScore >= 70 ? "✅" :
+               result.clarityScore >= 40 ? "⚠️" : "🚨";
+
+  document.getElementById("roiVerdictIcon").textContent = icon;
+  document.getElementById("roiVerdictText").textContent = result.verdict;
+
+  const meetingTypeLabels = {
+    "decision": "Decision Meeting",
+    "brainstorm": "Brainstorm Session",
+    "status-update": "Status Update",
+    "planning": "Planning Session",
+    "review": "Review Meeting",
+    "unclear": "Unclear Purpose"
+  };
+  document.getElementById("roiVerdictSubtext").textContent =
+    meetingTypeLabels[result.meetingType] || result.meetingType;
+
+  // Could be email badge
+  if (result.couldBeEmail) {
+    const badge = document.createElement("div");
+    badge.className = "could-be-email-badge";
+    badge.innerHTML = "📧 This could have been an email";
+    document.getElementById("roiVerdictSubtext").appendChild(badge);
+  }
+
+  // Metrics
+  document.getElementById("roiClarity").textContent = result.clarityScore;
+  document.getElementById("roiClarityBar").style.width = `${result.clarityScore}%`;
+
+  document.getElementById("roiOnTopic").textContent = `${result.onTopicPercent}%`;
+  document.getElementById("roiOnTopicBar").style.width = `${result.onTopicPercent}%`;
+
+  const actionCount = result.actionItems?.length || 0;
+  const decisionCount = result.decisions?.length || 0;
+
+  document.getElementById("roiActionCount").textContent = actionCount;
+  document.getElementById("roiDecisionCount").textContent = decisionCount;
+
+  // Cost per item
+  const costPerAction = actionCount > 0 ? meetingCost / actionCount : meetingCost;
+  const costPerDecision = decisionCount > 0 ? meetingCost / decisionCount : meetingCost;
+
+  document.getElementById("roiCostPerAction").textContent =
+    actionCount > 0 ? formatCurrency(costPerAction) : "N/A";
+  document.getElementById("roiCostPerDecision").textContent =
+    decisionCount > 0 ? formatCurrency(costPerDecision) : "N/A";
+
+  // Action items list
+  const actionList = document.getElementById("roiActionList");
+  if (result.actionItems?.length > 0) {
+    actionList.innerHTML = result.actionItems.map(item => `
+      <li>
+        <span class="roi-action-owner">@${item.owner || "Team"}</span>
+        ${item.task}
+        ${item.deadline ? `<span class="roi-action-deadline">📅 ${item.deadline}</span>` : ""}
+      </li>
+    `).join("");
+  } else {
+    actionList.innerHTML = '<li class="roi-action-empty">No action items detected</li>';
+  }
+
+  // Decisions list
+  const decisionList = document.getElementById("roiDecisionList");
+  if (result.decisions?.length > 0) {
+    decisionList.innerHTML = result.decisions.map(d => `<li>✓ ${d}</li>`).join("");
+  } else {
+    decisionList.innerHTML = '<li class="roi-decision-empty">No decisions detected</li>';
+  }
+
+  // Wasted time / off-topic
+  const wastedList = document.getElementById("roiWastedList");
+  const wastedCard = document.getElementById("roiWastedCard");
+  if (result.wastedTopics?.length > 0) {
+    wastedCard.style.display = "block";
+    wastedList.innerHTML = result.wastedTopics.map(t => `<li>⚠️ ${t}</li>`).join("");
+  } else {
+    wastedCard.style.display = "none";
+  }
+
+  // Recommendations
+  const recList = document.getElementById("roiRecList");
+  if (result.recommendations?.length > 0) {
+    recList.innerHTML = result.recommendations.map(r => `<li>💡 ${r}</li>`).join("");
+  } else {
+    recList.innerHTML = '<li>No specific recommendations</li>';
+  }
+}
+
+function copyRoiReport() {
+  const verdict = document.getElementById("roiVerdictText").textContent;
+  const clarity = document.getElementById("roiClarity").textContent;
+  const onTopic = document.getElementById("roiOnTopic").textContent;
+  const actions = document.getElementById("roiActionCount").textContent;
+  const decisions = document.getElementById("roiDecisionCount").textContent;
+  const costPerAction = document.getElementById("roiCostPerAction").textContent;
+
+  const actionItems = Array.from(document.querySelectorAll("#roiActionList li:not(.roi-action-empty)"))
+    .map(li => "  • " + li.textContent.trim())
+    .join("\n");
+
+  const text = `📊 Meeting ROI Report
+━━━━━━━━━━━━━━━━━━━━
+
+${verdict}
+
+📈 Metrics:
+• Clarity Score: ${clarity}/100
+• On-Topic: ${onTopic}
+• Action Items: ${actions}
+• Decisions: ${decisions}
+• Cost per Action: ${costPerAction}
+
+${actionItems ? `✅ Action Items:\n${actionItems}` : ""}
+
+Generated by Meeting Cost Calculator`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById("copyRoiReport");
+    const original = btn.textContent;
+    btn.textContent = "Copied!";
+    setTimeout(() => btn.textContent = original, 1200);
   });
 }
 
-function mockValueAnalysis(text) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      const actionItems = Math.floor(Math.random() * 6) + 1;
-      const mockTotalCost = 200 + Math.random() * 1200;
-      resolve({ actionItems, mockTotalCost, text });
-    }, 1500);
+function shareRoiToTeams() {
+  const verdict = document.getElementById("roiVerdictText").textContent;
+  const clarity = document.getElementById("roiClarity").textContent;
+  const actions = document.getElementById("roiActionCount").textContent;
+  const costPerAction = document.getElementById("roiCostPerAction").textContent;
+
+  const text = `### 📊 Meeting ROI Report
+
+**Verdict:** ${verdict}
+
+| Metric | Value |
+|--------|-------|
+| Clarity Score | ${clarity}/100 |
+| Action Items | ${actions} |
+| Cost per Action | ${costPerAction} |
+
+_Generated by Meeting Cost Calculator_`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById("shareRoiTeams");
+    const original = btn.textContent;
+    btn.textContent = "Copied!";
+    setTimeout(() => btn.textContent = original, 1200);
   });
-}
-
-async function runAgendaAudit() {
-  if (!agendaAuditBtn) return;
-  const originalText = agendaAuditBtn.textContent;
-  agendaAuditBtn.textContent = "Auditing...";
-  agendaAuditBtn.disabled = true;
-  agendaResultCard?.classList.remove("hidden");
-  if (agendaClarityScore) agendaClarityScore.textContent = "...";
-  if (agendaWastedTime) agendaWastedTime.textContent = "...";
-  if (agendaVerdict) agendaVerdict.textContent = "...";
-
-  const result = await mockAgendaAudit(agendaInput?.value || "");
-  if (agendaClarityScore) agendaClarityScore.textContent = `${result.clarity}/100`;
-  if (agendaWastedTime) agendaWastedTime.textContent = `${result.wasted}%`;
-  if (agendaVerdict) agendaVerdict.textContent = result.verdict;
-
-  agendaAuditBtn.textContent = originalText;
-  agendaAuditBtn.disabled = false;
-}
-
-async function runValueAnalysis() {
-  if (!valueAnalyzeBtn) return;
-  const originalText = valueAnalyzeBtn.textContent;
-  valueAnalyzeBtn.textContent = "Analyzing...";
-  valueAnalyzeBtn.disabled = true;
-  valueResultCard?.classList.remove("hidden");
-  if (valueActionItems) valueActionItems.textContent = "...";
-  if (valueCostPerItem) valueCostPerItem.textContent = "...";
-
-  const result = await mockValueAnalysis(valueInput?.value || "");
-  const costPerItem = result.actionItems ? result.mockTotalCost / result.actionItems : 0;
-  if (valueActionItems) valueActionItems.textContent = `${result.actionItems}`;
-  if (valueCostPerItem) valueCostPerItem.textContent = formatCurrency(costPerItem);
-
-  valueAnalyzeBtn.textContent = originalText;
-  valueAnalyzeBtn.disabled = false;
 }
 
 function handlePreset(target) {
@@ -544,8 +706,14 @@ themeToggle.addEventListener("click", toggleTheme);
 navPills.forEach(tab =>
   tab.addEventListener("click", () => switchView(tab.dataset.view))
 );
-agendaAuditBtn?.addEventListener("click", runAgendaAudit);
-valueAnalyzeBtn?.addEventListener("click", runValueAnalysis);
+
+// ROI Analyzer event listeners
+quickCheckBtn?.addEventListener("click", runQuickCheck);
+pullFromCalcBtn?.addEventListener("click", pullCostFromCalculator);
+analyzeRoiBtn?.addEventListener("click", runRoiAnalysis);
+document.getElementById("copyRoiReport")?.addEventListener("click", copyRoiReport);
+document.getElementById("shareRoiTeams")?.addEventListener("click", shareRoiToTeams);
+
 saveMeetingBtn.addEventListener("click", saveMeetingToHistory);
 dismissModalBtn.addEventListener("click", hideSummaryModal);
 summaryModal.addEventListener("click", event => {

@@ -16,15 +16,23 @@
         <h1>💸 Meeting Cost Calculator</h1>
         <p class="subhead">Understand the real-time cost of meetings and optimize your team’s time.</p>
       </div>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <svg class="toggle-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="5"/>
-          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-        </svg>
-        <svg class="toggle-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-        </svg>
-      </button>
+      <div class="header-actions">
+        <button class="icon-btn" id="viewTrendsBtn" aria-label="View trends">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3v18h18"/>
+            <path d="M18 9l-5 5-4-4-6 6"/>
+          </svg>
+        </button>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="toggle-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg class="toggle-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
     </header>
 
     <nav class="view-nav" aria-label="Views">
@@ -75,7 +83,13 @@
       </div>
 
       <div class="card summary-card">
-        <h2>Summary</h2>
+        <div class="summary-header">
+          <h2>Summary</h2>
+          <div class="live-ticker">
+            <div id="ticker" class="ticker-value">$0.00</div>
+            <div class="timer" id="timer">00:00</div>
+          </div>
+        </div>
         <div class="summary-grid">
           <div class="summary-item">
             <div class="label">Per Minute</div>
@@ -93,31 +107,14 @@
             <div class="label">Annual Run Rate</div>
             <div class="value" id="annualRunRate">$0.00</div>
           </div>
-          <div class="summary-item">
-            <div class="label">Live Cost</div>
-            <div class="value live" id="liveCost">$0.00</div>
-          </div>
         </div>
-        <p class="rate-note" id="rateNote"></p>
         <div class="breakdown" id="breakdown"></div>
-        <div class="timer-row">
+        <div class="summary-footer">
           <div class="summary-actions">
             <button class="btn ghost" id="copyBtn">Copy Summary</button>
             <button class="btn ghost teams" id="copyTeamsBtn">📋 Copy for Teams</button>
           </div>
-        </div>
-      </div>
-
-      <div class="card ticker-card">
-        <h2>Real-time Cost Ticker</h2>
-        <div id="ticker" class="ticker"></div>
-        <div class="ticker-actions">
-          <div class="timer" id="timer">00:00</div>
           <button class="btn danger hidden" id="stopBtn">Stop Meeting</button>
-        </div>
-        <div class="ticker-footer">
-          <p class="muted">The ticker updates live as the meeting runs.</p>
-          <button class="btn small ghost" id="viewTrendsBtn">📈 View Trends</button>
         </div>
       </div>
       </section>
@@ -157,7 +154,7 @@
             <textarea id="roiNotesInput" rows="6" placeholder="Meeting notes:&#10;- Discussed Q1 roadmap&#10;- John to send proposal by Friday&#10;- Sarah will review budget&#10;- Decided to postpone feature X&#10;- Next sync scheduled for Tuesday"></textarea>
           </div>
 
-          <div class="card roi-cost-card">
+          <div class="card">
             <div class="roi-input-header">
               <span class="roi-step">3</span>
               <div>

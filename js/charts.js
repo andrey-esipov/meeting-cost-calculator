@@ -2,7 +2,8 @@ let tickerValue = 0;
 let tickerSelection;
 
 function initTicker() {
-  tickerSelection = d3.select("#ticker").append("div").attr("class", "ticker-value").text("$0.00");
+  tickerSelection = d3.select("#ticker");
+  tickerSelection.text("$0.00");
 }
 
 function updateTicker(value) {

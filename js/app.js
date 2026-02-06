@@ -7,7 +7,7 @@ const perHourEl = document.getElementById("perHour");
 const plannedTotalEl = document.getElementById("plannedTotal");
 const annualRunRateEl = document.getElementById("annualRunRate");
 const annualRunRateItem = document.querySelector(".summary-item.annual-run-rate");
-const liveCostEl = document.getElementById("liveCost");
+const tickerEl = document.getElementById("ticker");
 const timerEl = document.getElementById("timer");
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
@@ -15,7 +15,6 @@ const resetBtn = document.getElementById("resetBtn");
 const copyBtn = document.getElementById("copyBtn");
 const copyTeamsBtn = document.getElementById("copyTeamsBtn");
 const themeToggle = document.getElementById("themeToggle");
-const rateNoteEl = document.getElementById("rateNote");
 const breakdownEl = document.getElementById("breakdown");
 const summaryModal = document.getElementById("summaryModal");
 const summaryDurationEl = document.getElementById("summaryDuration");
@@ -430,10 +429,6 @@ function updateSummary() {
     annualRunRateItem.classList.remove("is-recurring");
   }
 
-  if (rateNoteEl) {
-    rateNoteEl.textContent = `This meeting costs ${formatCurrency(totals.hourly)} per hour (${formatCurrency(totals.perMinute)} per minute).`;
-  }
-
   if (breakdownEl) {
     const breakdownItems = rows
       .map(row => {
@@ -466,7 +461,6 @@ function updateSummary() {
   refreshCharts();
 
   if (!meetingTimer) {
-    liveCostEl.textContent = formatCurrency(0);
     updateTicker(0);
     timerEl.textContent = "00:00";
   }
@@ -529,7 +523,6 @@ function startMeeting() {
   meetingTimer = setInterval(() => {
     elapsedSeconds += 1;
     const liveCost = perMinute * (elapsedSeconds / 60);
-    liveCostEl.textContent = formatCurrency(liveCost);
     updateTicker(liveCost);
     timerEl.textContent = formatTimer(elapsedSeconds);
   }, 1000);
@@ -542,7 +535,6 @@ function resetMeeting() {
   startBtn.textContent = "Start Meeting";
   startBtn.disabled = false;
   stopBtn.classList.add("hidden");
-  liveCostEl.textContent = formatCurrency(0);
   updateTicker(0);
   timerEl.textContent = "00:00";
 }

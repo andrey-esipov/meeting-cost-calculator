@@ -1046,3 +1046,48 @@ textarea {
   opacity: 1;
   transform: rotate(0deg) scale(1);
 }
+
+/* Ticker footer */
+.ticker-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.ticker-footer .muted {
+  margin: 0;
+}
+
+/* Trends Modal */
+.trends-modal-card {
+  width: min(800px, 95vw);
+}
+
+.trends-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 20px 0;
+}
+
+.trends-chart-section {
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+
+.trends-chart-section h3 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 600px) {
+  .trends-charts {
+    grid-template-columns: 1fr;
+  }
+}

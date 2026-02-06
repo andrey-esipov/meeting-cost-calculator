@@ -48,10 +48,48 @@ body {
   position: relative;
 }
 
-.header .theme-toggle {
+.header-actions {
   position: absolute;
   right: 0;
   top: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Icon button style */
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: var(--muted);
+}
+
+.icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+[data-theme="dark"] .icon-btn {
+  background: var(--card);
+}
+
+[data-theme="dark"] .icon-btn:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .view-nav {
@@ -279,11 +317,46 @@ textarea {
   grid-column: span 2;
 }
 
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.summary-header h2 {
+  margin: 0;
+}
+
+.live-ticker {
+  text-align: right;
+}
+
+.live-ticker .ticker-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent-2);
+  line-height: 1;
+}
+
+.live-ticker .timer {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.summary-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .summary-item .label {
@@ -583,7 +656,7 @@ textarea {
 
 .roi-inputs {
   display: grid;
-  grid-template-columns: 1fr 1fr 260px;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 12px;
   align-items: stretch;
 }
@@ -617,7 +690,7 @@ textarea {
   .roi-inputs {
     grid-template-columns: 1fr 1fr;
   }
-  .roi-inputs .roi-cost-card {
+  .roi-inputs .card:nth-child(3) {
     grid-column: span 2;
   }
 }
@@ -626,7 +699,7 @@ textarea {
   .roi-inputs {
     grid-template-columns: 1fr;
   }
-  .roi-inputs .roi-cost-card {
+  .roi-inputs .card:nth-child(3) {
     grid-column: span 1;
   }
 }

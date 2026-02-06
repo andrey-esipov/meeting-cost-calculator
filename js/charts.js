@@ -42,7 +42,7 @@ function updateDonut(data) {
   const { svg, radius } = donutChart;
   const color = d3.scaleOrdinal()
     .domain(data.map(d => d.type))
-    .range(["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#38bdf8"]);
+    .range(["#0078d4", "#107c10", "#ffb900", "#d83b01", "#008272"]);
 
   const pie = d3.pie().value(d => d.value);
   const arc = d3.arc().innerRadius(radius * 0.6).outerRadius(radius);
@@ -97,7 +97,7 @@ function updateSparkline(data) {
   path.enter()
     .append("path")
     .attr("fill", "none")
-    .attr("stroke", "#6366f1")
+    .attr("stroke", "#0078d4")
     .attr("stroke-width", 3)
     .merge(path)
     .transition()
@@ -108,7 +108,7 @@ function updateSparkline(data) {
   dots.enter()
     .append("circle")
     .attr("r", 3)
-    .attr("fill", "#10b981")
+    .attr("fill", "#107c10")
     .merge(dots)
     .transition()
     .duration(600)

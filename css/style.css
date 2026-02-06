@@ -984,80 +984,48 @@ textarea {
   100% { background-position: -200% 0; }
 }
 
-/* Beautiful Sun/Moon Theme Toggle */
+/* Simple Sun/Moon Theme Toggle */
 .theme-toggle {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  outline: none;
-}
-
-.theme-toggle-track {
-  display: flex;
-  align-items: center;
-  position: relative;
-  width: 52px;
-  height: 28px;
-  background: #e2e8f0;
-  border-radius: 30px;
-  padding: 2px;
-  transition: all 0.3s ease;
-}
-
-[data-theme="dark"] .theme-toggle-track {
-  background: #374151;
-}
-
-.theme-toggle-thumb {
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  background: white;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  left: 2px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-[data-theme="dark"] .theme-toggle-thumb {
-  left: calc(100% - 26px);
-  background: #1f2937;
+.theme-toggle:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.theme-icon {
-  font-size: 14px;
+.toggle-icon {
+  font-size: 18px;
   position: absolute;
   transition: all 0.3s ease;
 }
 
-.theme-icon.sun {
+.toggle-icon.sun {
   opacity: 1;
-  transform: scale(1);
+  transform: rotate(0deg);
 }
 
-.theme-icon.moon {
+.toggle-icon.moon {
   opacity: 0;
-  transform: scale(0.5);
+  transform: rotate(-90deg);
 }
 
-[data-theme="dark"] .theme-icon.sun {
+[data-theme="dark"] .toggle-icon.sun {
   opacity: 0;
-  transform: scale(0.5);
+  transform: rotate(90deg);
 }
 
-[data-theme="dark"] .theme-icon.moon {
+[data-theme="dark"] .toggle-icon.moon {
   opacity: 1;
-  transform: scale(1);
-}
-
-.theme-toggle:hover .theme-toggle-track {
-  background: #cbd5e1;
-}
-
-[data-theme="dark"] .theme-toggle:hover .theme-toggle-track {
-  background: #4b5563;
+  transform: rotate(0deg);
 }

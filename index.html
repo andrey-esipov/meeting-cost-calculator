@@ -115,17 +115,10 @@
           <div class="timer" id="timer">00:00</div>
           <button class="btn danger hidden" id="stopBtn">Stop Meeting</button>
         </div>
-        <p class="muted">The ticker updates live as the meeting runs.</p>
-      </div>
-
-      <div class="card">
-        <h2>Weekly Meeting Cost Breakdown</h2>
-        <div id="donut"></div>
-      </div>
-
-      <div class="card">
-        <h2>Cost Trend</h2>
-        <div id="sparkline"></div>
+        <div class="ticker-footer">
+          <p class="muted">The ticker updates live as the meeting runs.</p>
+          <button class="btn small ghost" id="viewTrendsBtn">📈 View Trends</button>
+        </div>
       </div>
       </section>
       <div class="data-source">
@@ -258,7 +251,7 @@
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
       <div class="modal-header">
         <h2 id="summaryTitle">Meeting Complete! 🎉</h2>
-        <p class="muted">Here’s the damage report.</p>
+        <p class="muted">Here's the damage report.</p>
       </div>
       <div class="modal-stats">
         <div class="stat">
@@ -282,6 +275,28 @@
       <div class="modal-actions">
         <button class="btn primary" id="saveMeetingBtn">Save to Weekly Log</button>
         <button class="btn" id="dismissModalBtn">Dismiss</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="trendsModal" aria-hidden="true">
+    <div class="modal-card trends-modal-card" role="dialog" aria-modal="true" aria-labelledby="trendsTitle">
+      <div class="modal-header">
+        <h2 id="trendsTitle">📈 Meeting Cost Trends</h2>
+        <p class="muted">Historical breakdown of your meeting costs</p>
+      </div>
+      <div class="trends-charts">
+        <div class="trends-chart-section">
+          <h3>Weekly Breakdown</h3>
+          <div id="donut"></div>
+        </div>
+        <div class="trends-chart-section">
+          <h3>14-Day Trend</h3>
+          <div id="sparkline"></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="closeTrendsBtn">Close</button>
       </div>
     </div>
   </div>

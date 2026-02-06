@@ -25,6 +25,9 @@ const summaryAlternativesEl = document.getElementById("summaryAlternatives");
 const summaryFactEl = document.getElementById("summaryFact");
 const saveMeetingBtn = document.getElementById("saveMeetingBtn");
 const dismissModalBtn = document.getElementById("dismissModalBtn");
+const trendsModal = document.getElementById("trendsModal");
+const viewTrendsBtn = document.getElementById("viewTrendsBtn");
+const closeTrendsBtn = document.getElementById("closeTrendsBtn");
 
 const navPills = document.querySelectorAll(".view-tab");
 const navContainer = document.querySelector(".app-nav");
@@ -414,6 +417,19 @@ function updateSummary() {
   perHourEl.textContent = formatCurrency(totals.hourly);
   plannedTotalEl.textContent = formatCurrency(totals.plannedTotal);
 
+  // Update annual run rate for recurring meetings
+  const multiplier = getRecurringMultiplier();
+  const annualCost = totals.plannedTotal * (multiplier || 1);
+  annualRunRateEl.textContent = formatCurrency(annualCost);
+
+  if (multiplier > 0) {
+    annualRunRateItem.classList.remove("is-one-off");
+    annualRunRateItem.classList.add("is-recurring");
+  } else {
+    annualRunRateItem.classList.add("is-one-off");
+    annualRunRateItem.classList.remove("is-recurring");
+  }
+
   if (rateNoteEl) {
     rateNoteEl.textContent = `This meeting costs ${formatCurrency(totals.hourly)} per hour (${formatCurrency(totals.perMinute)} per minute).`;
   }
@@ -651,6 +667,17 @@ function hideSummaryModal() {
   summaryModal.setAttribute("aria-hidden", "true");
 }
 
+function showTrendsModal() {
+  refreshCharts();
+  trendsModal.classList.add("active");
+  trendsModal.setAttribute("aria-hidden", "false");
+}
+
+function hideTrendsModal() {
+  trendsModal.classList.remove("active");
+  trendsModal.setAttribute("aria-hidden", "true");
+}
+
 function saveMeetingToHistory() {
   const rows = getRows();
   const totals = computeTotals(rows, Number(durationInput.value || 0));
@@ -697,6 +724,7 @@ function toggleTheme() {
 
 addRowBtn.addEventListener("click", () => createRow());
 durationInput.addEventListener("change", updateSummary);
+recurringSelect.addEventListener("change", updateSummary);
 startBtn.addEventListener("click", startMeeting);
 stopBtn.addEventListener("click", stopMeeting);
 resetBtn.addEventListener("click", resetMeeting);
@@ -718,6 +746,12 @@ saveMeetingBtn.addEventListener("click", saveMeetingToHistory);
 dismissModalBtn.addEventListener("click", hideSummaryModal);
 summaryModal.addEventListener("click", event => {
   if (event.target === summaryModal) hideSummaryModal();
+});
+
+viewTrendsBtn?.addEventListener("click", showTrendsModal);
+closeTrendsBtn?.addEventListener("click", hideTrendsModal);
+trendsModal?.addEventListener("click", event => {
+  if (event.target === trendsModal) hideTrendsModal();
 });
 
 initTicker();

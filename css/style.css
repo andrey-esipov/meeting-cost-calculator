@@ -1,23 +1,23 @@
 :root {
-  --bg: #f8fafc;
+  --bg: #f3f2f1;
   --card: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --accent: #6366f1;
-  --accent-2: #10b981;
-  --border: #e2e8f0;
-  --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  --text: #201f1e;
+  --muted: #605e5c;
+  --accent: #0078d4;
+  --accent-2: #107c10;
+  --border: #edebe9;
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 [data-theme="dark"] {
-  --bg: #0b1120;
-  --card: #111827;
-  --text: #f8fafc;
-  --muted: #94a3b8;
-  --accent: #8b5cf6;
-  --accent-2: #22c55e;
-  --border: #1f2937;
-  --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  --bg: #1b1a19;
+  --card: #252423;
+  --text: #faf9f8;
+  --muted: #a19f9d;
+  --accent: #2899f5;
+  --accent-2: #54b054;
+  --border: #3b3a39;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 * {
@@ -158,7 +158,7 @@ textarea {
   padding: 12px;
   border-radius: 14px;
   border: 1px dashed var(--border);
-  background: rgba(99, 102, 241, 0.05);
+  background: rgba(0, 120, 212, 0.05);
 }
 
 .quick-presets__label {
@@ -237,7 +237,7 @@ textarea {
 }
 
 .btn.ghost {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(0, 120, 212, 0.1);
   border-color: transparent;
   color: var(--accent);
 }
@@ -364,7 +364,7 @@ textarea {
   border: 1px solid var(--border);
   border-radius: 10px;
   font-size: 13px;
-  background: rgba(99, 102, 241, 0.05);
+  background: rgba(0, 120, 212, 0.05);
 }
 
 .data-source {
@@ -439,7 +439,7 @@ textarea {
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(0, 120, 212, 0.08);
 }
 
 
@@ -581,15 +581,16 @@ textarea {
 }
 
 .roi-inputs .card {
-  padding: 14px 16px;
+  padding: 18px 20px;
   margin: 0;
 }
 
 .roi-inputs textarea {
-  min-height: 70px;
-  max-height: 100px;
-  font-size: 12px;
-  padding: 10px;
+  min-height: 120px;
+  max-height: 160px;
+  font-size: 13px;
+  padding: 14px;
+  line-height: 1.6;
   resize: none;
 }
 
@@ -679,7 +680,7 @@ textarea {
 }
 
 .roi-cost-card {
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(16, 185, 129, 0.08));
+  background: linear-gradient(135deg, rgba(0, 120, 212, 0.06), rgba(16, 124, 16, 0.06));
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -734,7 +735,7 @@ textarea {
 }
 
 .roi-verdict-card {
-  background: linear-gradient(135deg, var(--accent), #8b5cf6);
+  background: linear-gradient(135deg, var(--accent), #005a9e);
   color: white;
   border-radius: 12px;
   padding: 16px;
@@ -905,7 +906,7 @@ textarea {
 .roi-decision-list li,
 .roi-rec-list li {
   padding: 6px 10px;
-  background: rgba(99, 102, 241, 0.08);
+  background: rgba(0, 120, 212, 0.08);
   border-radius: 6px;
   font-size: 12px;
   line-height: 1.4;

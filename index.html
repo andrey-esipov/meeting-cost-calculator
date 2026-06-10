@@ -1,309 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Meeting Cost Calculator</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Burn Rate — what your meetings actually cost</title>
+  <meta name="description" content="Sign in once and see what your real past & upcoming meetings cost — attendee titles resolved automatically, insights by Work IQ." />
+  <meta property="og:title" content="Burn Rate — what your meetings actually cost" />
+  <meta property="og:description" content="Your week of meetings, costed automatically. Powered by Work IQ." />
+  <meta property="og:image" content="assets/hero-ember.webp" />
+  <meta name="theme-color" content="#0A0A10" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%94%A5%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="app" id="app">
-    <header class="header">
-      <div>
-        <h1>💸 Meeting Cost Calculator</h1>
-        <p class="subhead">Understand the real-time cost of meetings and optimize your team’s time.</p>
+  <header class="bar">
+    <div class="bar-in">
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1.5 3.2.4 5-1.2 6.6C9 10.5 7 12 7 15a5 5 0 0 0 10 .2c0-2-1-3.6-1.7-4.6-.5 1-1.2 1.6-2 1.8.6-2.2-.2-4.4-1.3-6.4z"/></svg>
+        Burn&nbsp;Rate
       </div>
-      <div class="header-actions">
-        <button class="icon-btn" id="viewTrendsBtn" aria-label="View trends">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 3v18h18"/>
-            <path d="M18 9l-5 5-4-4-6 6"/>
-          </svg>
-        </button>
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-          <svg class="toggle-icon sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"/>
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-          </svg>
-          <svg class="toggle-icon moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-          </svg>
-        </button>
-      </div>
-    </header>
-
-    <nav class="view-nav" aria-label="Views">
-      <button class="view-tab active" data-view="view-calculator">Calculator</button>
-      <button class="view-tab" data-view="view-roi">Meeting ROI</button>
-    </nav>
-
-    <div id="view-calculator" class="view active">
-      <section class="grid">
-        <div class="card">
-        <h2>Inputs</h2>
-        <div class="form-group">
-          <label for="duration">Planned meeting duration (minutes)</label>
-          <input type="number" id="duration" min="1" value="30" />
-        </div>
-        <div class="form-group">
-          <label for="recurring">Recurring?</label>
-          <select id="recurring">
-            <option value="one-off" selected>One-off</option>
-            <option value="daily">Daily (x240)</option>
-            <option value="weekly">Weekly (x50)</option>
-            <option value="bi-weekly">Bi-weekly (x25)</option>
-            <option value="monthly">Monthly (x12)</option>
-          </select>
-        </div>
-
-        <div class="attendees">
-          <div class="attendees-header">
-            <h3>Attendees</h3>
-            <button class="btn small" id="addRow">Add role</button>
-          </div>
-          <div class="quick-presets">
-            <div class="quick-presets__label">Quick Presets</div>
-            <div class="quick-presets__actions">
-              <button class="preset-chip" data-preset="triad">Feature Crew</button>
-              <button class="preset-chip" data-preset="spec-review">Spec Review</button>
-              <button class="preset-chip" data-preset="leadership">Leadership Review</button>
-              <button class="preset-chip" data-preset="all-hands">Team All Hands</button>
-            </div>
-          </div>
-          <div id="attendeeRows"></div>
-        </div>
-
-        <div class="actions">
-          <button class="btn primary" id="startBtn">Start Meeting</button>
-          <button class="btn" id="resetBtn">Reset</button>
-        </div>
-      </div>
-
-      <div class="card summary-card">
-        <div class="summary-header">
-          <h2>Summary</h2>
-          <div class="live-ticker">
-            <div id="ticker" class="ticker-value">$0.00</div>
-            <div class="timer" id="timer">00:00</div>
-          </div>
-        </div>
-        <div class="summary-grid">
-          <div class="summary-item">
-            <div class="label">Per Minute</div>
-            <div class="value" id="perMinute">$0.00</div>
-          </div>
-          <div class="summary-item">
-            <div class="label">Per Hour</div>
-            <div class="value" id="perHour">$0.00</div>
-          </div>
-          <div class="summary-item">
-            <div class="label">Planned Total</div>
-            <div class="value" id="plannedTotal">$0.00</div>
-          </div>
-          <div class="summary-item annual-run-rate is-one-off">
-            <div class="label">Annual Run Rate</div>
-            <div class="value" id="annualRunRate">$0.00</div>
-          </div>
-        </div>
-        <div class="breakdown" id="breakdown"></div>
-        <div class="summary-footer">
-          <div class="summary-actions">
-            <button class="btn ghost" id="copyBtn">Copy Summary</button>
-            <button class="btn ghost teams" id="copyTeamsBtn">📋 Copy for Teams</button>
-          </div>
-          <button class="btn danger hidden" id="stopBtn">Stop Meeting</button>
-        </div>
-      </div>
-      </section>
-      <div class="data-source">
-        💼 Salary data from <a href="https://www.levels.fyi/companies/microsoft/salaries" target="_blank" rel="noopener">Levels.fyi</a> (Microsoft, US-based, total compensation including base, stock, and bonus)
-      </div>
-    </div> <!-- End view-calculator -->
-
-    <!-- View: Meeting ROI Analyzer -->
-    <div id="view-roi" class="view hidden">
-      <section class="roi-layout">
-        <!-- Input Section -->
-        <div class="roi-inputs">
-          <div class="card">
-            <div class="roi-input-header">
-              <span class="roi-step">1</span>
-              <div>
-                <h3>Before the Meeting</h3>
-                <p class="muted">Paste the calendar invite or agenda</p>
-              </div>
-            </div>
-            <textarea id="roiAgendaInput" rows="6" placeholder="Subject: Weekly Sync&#10;Attendees: John, Sarah, Mike&#10;Agenda:&#10;- Review last week's progress&#10;- Discuss blockers&#10;- Plan next steps"></textarea>
-            <div class="quick-check-row">
-              <button class="btn small ghost" id="quickCheckBtn">Quick Check</button>
-              <span class="quick-check-result" id="quickCheckResult"></span>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="roi-input-header">
-              <span class="roi-step">2</span>
-              <div>
-                <h3>After the Meeting</h3>
-                <p class="muted">Paste notes, transcript, or summary</p>
-              </div>
-            </div>
-            <textarea id="roiNotesInput" rows="6" placeholder="Meeting notes:&#10;- Discussed Q1 roadmap&#10;- John to send proposal by Friday&#10;- Sarah will review budget&#10;- Decided to postpone feature X&#10;- Next sync scheduled for Tuesday"></textarea>
-          </div>
-
-          <div class="card">
-            <div class="roi-input-header">
-              <span class="roi-step">3</span>
-              <div>
-                <h3>Meeting Cost</h3>
-                <p class="muted">From calculator or manually</p>
-              </div>
-            </div>
-            <div class="roi-cost-input">
-              <span class="roi-cost-currency">$</span>
-              <input type="number" id="roiCostInput" value="0" min="0" step="50" />
-              <button class="btn small" id="pullFromCalc">Pull</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="roi-analyze-row">
-          <button class="btn primary roi-analyze-btn" id="analyzeRoiBtn">
-            <span class="btn-text">Analyze Meeting ROI</span>
-            <span class="btn-loading hidden">Analyzing...</span>
-          </button>
-        </div>
-
-        <!-- Results Section -->
-        <div class="roi-results hidden" id="roiResults">
-          <!-- Top row: Verdict + Metrics -->
-          <div class="roi-results-top">
-            <div class="roi-verdict-card">
-              <span class="roi-verdict-icon" id="roiVerdictIcon">📊</span>
-              <div class="roi-verdict-text" id="roiVerdictText">Analyzing...</div>
-              <div class="roi-verdict-subtext" id="roiVerdictSubtext"></div>
-            </div>
-
-            <div class="roi-metrics-compact">
-              <div class="roi-metric-row">
-                <span class="roi-metric-label">Clarity</span>
-                <div class="roi-metric-bar"><div class="roi-metric-fill" id="roiClarityBar"></div></div>
-                <span class="roi-metric-value" id="roiClarity">--</span>
-              </div>
-              <div class="roi-metric-row">
-                <span class="roi-metric-label">On-Topic</span>
-                <div class="roi-metric-bar"><div class="roi-metric-fill" id="roiOnTopicBar"></div></div>
-                <span class="roi-metric-value" id="roiOnTopic">--</span>
-              </div>
-              <div class="roi-metric-nums">
-                <div><strong id="roiActionCount">--</strong> Actions</div>
-                <div><strong id="roiDecisionCount">--</strong> Decisions</div>
-                <div><strong id="roiCostPerAction">--</strong>/action</div>
-                <div><strong id="roiCostPerDecision">--</strong>/decision</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bottom row: Details in columns -->
-          <div class="roi-results-bottom">
-            <div class="roi-detail-col">
-              <h4>Action Items</h4>
-              <ul class="roi-action-list" id="roiActionList">
-                <li class="roi-action-empty">No action items detected</li>
-              </ul>
-            </div>
-
-            <div class="roi-detail-col">
-              <h4>Decisions</h4>
-              <ul class="roi-decision-list" id="roiDecisionList">
-                <li class="roi-decision-empty">No decisions detected</li>
-              </ul>
-            </div>
-
-            <div class="roi-detail-col">
-              <h4>Recommendations</h4>
-              <ul class="roi-rec-list" id="roiRecList">
-                <li>Run analysis first</li>
-              </ul>
-              <div class="roi-wasted-section hidden" id="roiWastedCard">
-                <h4>Off-Topic</h4>
-                <ul class="roi-wasted-list" id="roiWastedList"></ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="roi-actions">
-            <button class="btn small ghost" id="copyRoiReport">Copy Report</button>
-            <button class="btn small ghost teams" id="shareRoiTeams">Share to Teams</button>
-          </div>
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="summaryModal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
-      <div class="modal-header">
-        <h2 id="summaryTitle">Meeting Complete! 🎉</h2>
-        <p class="muted">Here's the damage report.</p>
-      </div>
-      <div class="modal-stats">
-        <div class="stat">
-          <span class="label">Duration</span>
-          <span class="value" id="summaryDuration">0 minutes</span>
-        </div>
-        <div class="stat">
-          <span class="label">Attendees</span>
-          <span class="value" id="summaryAttendees">0 people</span>
-        </div>
-        <div class="stat">
-          <span class="label">Total Cost</span>
-          <span class="value" id="summaryCost">$0.00</span>
-        </div>
-      </div>
-      <div class="modal-section">
-        <h3>What you could buy instead</h3>
-        <ul id="summaryAlternatives" class="alternatives"></ul>
-      </div>
-      <div class="modal-section fun-fact" id="summaryFact"></div>
-      <div class="modal-actions">
-        <button class="btn primary" id="saveMeetingBtn">Save to Weekly Log</button>
-        <button class="btn" id="dismissModalBtn">Dismiss</button>
+      <nav class="nav" aria-label="Views">
+        <button class="navbtn on" data-view="week">This Week</button>
+        <button class="navbtn" data-view="upcoming">Upcoming</button>
+        <button class="navbtn" data-view="quick">Quick estimate</button>
+      </nav>
+      <div class="bar-r">
+        <button class="conn" id="connBtn" aria-live="polite"><span class="dot"></span><span id="connLabel">Demo data</span></button>
+        <button class="iconbtn" id="themeBtn" aria-label="Toggle theme" title="Toggle light / dark">◐</button>
       </div>
     </div>
-  </div>
+  </header>
 
-  <div class="modal-overlay" id="trendsModal" aria-hidden="true">
-    <div class="modal-card trends-modal-card" role="dialog" aria-modal="true" aria-labelledby="trendsTitle">
-      <div class="modal-header">
-        <h2 id="trendsTitle">📈 Meeting Cost Trends</h2>
-        <p class="muted">Historical breakdown of your meeting costs</p>
-      </div>
-      <div class="trends-charts">
-        <div class="trends-chart-section">
-          <h3>Weekly Breakdown</h3>
-          <div id="donut"></div>
+  <main class="wrap" id="app">
+    <!-- ============ THIS WEEK ============ -->
+    <section class="view" id="view-week">
+      <div class="hero">
+        <div class="hero-embers" aria-hidden="true"></div>
+        <div class="eyebrow" id="heroEyebrow">Your meetings · this week</div>
+        <div class="bignum" id="bignum">$0</div>
+        <div class="heroline">
+          <span class="delta" id="delta" hidden></span>
+          <span class="substat" id="substat">Loading your week…</span>
         </div>
-        <div class="trends-chart-section">
-          <h3>14-Day Trend</h3>
-          <div id="sparkline"></div>
-        </div>
+        <div class="days" id="days"></div>
       </div>
-      <div class="modal-actions">
-        <button class="btn" id="closeTrendsBtn">Close</button>
-      </div>
-    </div>
-  </div>
 
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+      <div class="trio">
+        <div class="card stat"><div class="k"><span class="ic">💸</span>Most expensive meeting</div><div class="v" id="statTopCost">—</div><div class="m" id="statTopMeta">—</div></div>
+        <div class="card stat email"><div class="k"><span class="ic">📧</span>Could've been an email</div><div class="v" id="statEmail">—</div><div class="m" id="statEmailMeta">—</div></div>
+        <div class="card stat"><div class="k"><span class="ic">🎯</span>Focus time left</div><div class="v" id="statFocus">—</div><div class="m" id="statFocusMeta">—</div></div>
+      </div>
+
+      <div class="card lb">
+        <h3>🏆 Meeting Leaderboard · most expensive this week</h3>
+        <div id="leaderboard"></div>
+      </div>
+
+      <div class="card wiqpanel">
+        <h3>🧠 Work IQ read your week <span class="wiq-badge" id="wiqBadge">demo</span></h3>
+        <div class="wiqbody" id="wiqNarrative">Reading your week…</div>
+        <div class="recs" id="wiqRecs"></div>
+      </div>
+
+      <div class="share">
+        <button class="btn primary" id="flexBtn">🔥 Flex on Teams →</button>
+        <button class="btn ghost" id="copyBtn">Copy summary</button>
+        <button class="btn ghost" data-go="upcoming">See upcoming →</button>
+      </div>
+      <div class="foot" id="footNote"></div>
+    </section>
+
+    <!-- ============ UPCOMING ============ -->
+    <section class="view" id="view-upcoming" hidden>
+      <div class="hero compact">
+        <div class="eyebrow">Already on your calendar · next 2 weeks</div>
+        <div class="bignum sm" id="upTotal">$0</div>
+        <div class="substat" id="upSub">—</div>
+      </div>
+      <div class="card lb"><h3>📆 Upcoming meetings, most expensive first</h3><div id="upList"></div></div>
+      <div class="foot">Decline early and you keep the money. Costs are estimates.</div>
+    </section>
+
+    <!-- ============ QUICK ESTIMATE ============ -->
+    <section class="view" id="view-quick" hidden>
+      <div class="hero compact">
+        <div class="eyebrow">No sign-in needed</div>
+        <h1 class="qtitle">Quick estimate</h1>
+        <div class="substat">Price a meeting before you send the invite.</div>
+      </div>
+      <div class="qgrid">
+        <div class="card qinputs">
+          <label class="ql">Duration (minutes)</label>
+          <input type="number" id="qDuration" min="5" step="5" value="30" />
+          <div class="qroster-head"><span class="ql">Attendees</span><button class="btn ghost sm" id="qAdd">+ Add role</button></div>
+          <div id="qRows"></div>
+        </div>
+        <div class="card qresult">
+          <div class="eyebrow">This meeting costs</div>
+          <div class="bignum sm" id="qTotal">$0</div>
+          <div class="substat" id="qPerHour">—</div>
+          <div class="qhint" id="qAnnual"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <!-- MSAL (only used in live mode; harmless in demo) -->
+  <script src="https://alcdn.msauth.net/browser/2.38.4/js/msal-browser.min.js"></script>
+  <script src="js/config.js"></script>
   <script src="js/data.js"></script>
+  <script src="js/titles.js"></script>
   <script src="js/calculator.js"></script>
-  <script src="js/charts.js"></script>
-  <script src="js/ai.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/sample-data.js"></script>
+  <script src="js/graph.js"></script>
+  <script src="js/workiq.js"></script>
+  <script src="js/share-card.js"></script>
+  <script src="js/data-source.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
-<!-- force rebuild -->

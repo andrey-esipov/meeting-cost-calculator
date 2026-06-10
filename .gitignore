@@ -1,0 +1,10 @@
+.DS_Store
+*.log
+# gstack local artifacts (not part of the app)
+.gstack/
+# playwright scratch
+.playwright-mcp/
+# proxy build/secrets
+node_modules/
+proxy/node_modules/
+proxy/local.settings.json

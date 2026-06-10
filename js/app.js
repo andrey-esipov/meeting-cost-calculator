@@ -116,7 +116,7 @@
     $("leaderboard").innerHTML = w.leaderboard.length ? w.leaderboard.map(function (it, i) {
       var m = it.meeting;
       var quick = /quick/i.test(m.subject) ? ' <span class="tag-quick">(it was not quick)</span>' : "";
-      return '<div class="row"><span class="rank">' + (medals[i] || (i + 1)) + '</span>' +
+      return '<div class="row" style="--d:' + (i * 70) + '"><span class="rank">' + (medals[i] || (i + 1)) + '</span>' +
         '<div><div class="t">' + escapeHtml(m.subject) + quick + '</div>' +
         '<div class="meta">' + m.attendees.length + " attendees · " + m.durationMin + " min" + (m.isRecurring ? " · recurring" : "") + '</div></div>' +
         '<span class="cost">' + E.money(it.cost) + (emoji[i] ? ' <span class="e">' + emoji[i] + "</span>" : "") + "</span></div>";
@@ -146,9 +146,9 @@
     countUp($("upTotal"), u.total);
     $("upSub").innerHTML = "<b>" + u.count + "</b> meetings already booked · projected <b>" + E.money(u.total) + "</b>";
     var byCost = u.items.slice().sort(function (a, b) { return b.cost - a.cost; }).slice(0, 12);
-    $("upList").innerHTML = byCost.length ? byCost.map(function (it) {
+    $("upList").innerHTML = byCost.length ? byCost.map(function (it, i) {
       var m = it.meeting;
-      return '<div class="row"><span class="rank">' + (E.isEmailable(m) ? "📧" : "📅") + '</span>' +
+      return '<div class="row" style="--d:' + (Math.min(i, 12) * 45) + '"><span class="rank">' + (E.isEmailable(m) ? "📧" : "📅") + '</span>' +
         '<div><div class="t">' + escapeHtml(m.subject) + '</div>' +
         '<div class="meta">' + timeLabel(m.start) + " · " + m.attendees.length + " people · " + m.durationMin + " min</div></div>" +
         '<span class="cost">' + E.money(it.cost) + "</span></div>";

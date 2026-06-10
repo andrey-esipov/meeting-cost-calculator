@@ -1,38 +1,38 @@
 // Burn Rate — configuration
 // -------------------------------------------------------------------------
-// Demo Mode works with ZERO setup. To light up LIVE data (your real calendar
-// via Microsoft Graph + Work IQ insights), do the one-time setup in README.md
-// and fill in the three values marked "PASTE". Until then, the app runs on
-// realistic demo data and every colleague still sees the full experience.
+// Demo Mode works with ZERO setup. LIVE data (your real calendar via Microsoft
+// Graph + Work IQ insights) turns on once a Client ID + proxy URL are present.
+// Those can be set two ways:
+//   1) In-app: the "Connect" dialog (js/connect.js) saves them to localStorage.
+//   2) Hardcoded here: change the defaults in brLS(..., "<default>") below.
+// See README.md for the one-time Entra app + proxy setup.
 // -------------------------------------------------------------------------
+function brLS(key, fallback) { try { return localStorage.getItem(key) || fallback; } catch (e) { return fallback; } }
+
 window.BR_CONFIG = {
   appName: "Burn Rate",
 
   // ---- Microsoft sign-in (MSAL + Microsoft Graph) ----
   msal: {
-    clientId: "",                  // PASTE: your Entra app (SPA) Application (client) ID
-    tenantId: "organizations",     // PASTE: your tenant GUID (or leave "organizations")
+    clientId: brLS("br_clientId", ""),                 // Entra app (SPA) Application (client) ID
+    tenantId: brLS("br_tenantId", "organizations"),    // tenant GUID, or "organizations"
     get authority() { return "https://login.microsoftonline.com/" + this.tenantId; },
     redirectUri: window.location.origin + window.location.pathname,
   },
-  // delegated Graph scopes: read your calendar + look up attendee job titles
   graphScopes: ["User.Read", "Calendars.Read", "User.ReadBasic.All"],
 
   // ---- Work IQ (the "read your week" insight layer) ----
   workIq: {
-    proxyUrl: "",                  // PASTE: your deployed proxy URL (see proxy/README.md)
+    proxyUrl: brLS("br_proxyUrl", ""),                 // deployed relay URL (see proxy/README.md)
     scope: "api://workiq.svc.cloud.microsoft/WorkIQAgent.Ask",
   },
 
-  // how far back / forward to pull meetings (days)
   pastDays: 14,
   futureDays: 14,
-
-  workHoursPerYear: 2080,          // for annual -> hourly conversion
-  hoursPerWeek: 40,                // for "focus time left"
+  workHoursPerYear: 2080,
+  hoursPerWeek: 40,
   currency: "USD",
 };
 
-// Live mode is available only when a client ID has been provided.
 window.BR_CONFIG.liveAvailable = !!window.BR_CONFIG.msal.clientId;
 window.BR_CONFIG.workIqAvailable = !!(window.BR_CONFIG.msal.clientId && window.BR_CONFIG.workIq.proxyUrl);

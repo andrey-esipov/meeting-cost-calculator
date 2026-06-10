@@ -141,4 +141,47 @@ html[data-theme="light"] .navbtn:hover,html[data-theme="light"] .navbtn.on{backg
   .nav{display:none}.trio{grid-template-columns:1fr}.qgrid{grid-template-columns:1fr}.qresult{position:static}
   .conn{font-size:0;gap:0;padding:9px}.conn .dot{width:8px;height:8px}.conn:after{content:attr(data-short);font-size:12px;font-weight:600}
 }
+/* ===================== Motion + polish ===================== */
+@keyframes brRise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes brGlow{0%,100%{opacity:.46}50%{opacity:.74}}
+@keyframes brShimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes brSheen{0%{transform:translateX(-130%)}60%,100%{transform:translateX(240%)}}
+@keyframes brPulse{0%,100%{box-shadow:0 0 0 3px rgba(31,191,115,.18)}50%{box-shadow:0 0 0 6px rgba(31,191,115,.05)}}
+
+/* always-on hover/feel polish (the reduce query below neutralizes transitions) */
+.card{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.stat:hover,.wiqpanel:hover{transform:translateY(-2px);border-color:var(--line2)}
+.lb .row{border-radius:11px;padding-left:9px;padding-right:9px;transition:background .15s ease}
+.lb .row:hover{background:rgba(255,255,255,.04)}
+.lb .row:first-of-type{background:linear-gradient(90deg,rgba(255,138,44,.10),transparent 62%)}
+.rank{transition:transform .15s ease}.lb .row:hover .rank{transform:scale(1.16)}
+.navbtn{position:relative}
+.navbtn.on::after{content:"";position:absolute;left:13px;right:13px;bottom:3px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--flame2),var(--flame3))}
+.btn.primary{position:relative;overflow:hidden}
+.btn.primary::after{content:"";position:absolute;inset:0 auto 0 0;width:38%;transform:translateX(-130%);
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent)}
+
+@media (prefers-reduced-motion:no-preference){
+  /* staggered entrance for whichever view is visible (replays on tab switch) */
+  .view:not([hidden]) .eyebrow,.view:not([hidden]) .bignum,.view:not([hidden]) .heroline,
+  .view:not([hidden]) .days,.view:not([hidden]) .trio>*,.view:not([hidden]) .lb,
+  .view:not([hidden]) .wiqpanel,.view:not([hidden]) .share,.view:not([hidden]) .qgrid>*,
+  .view:not([hidden]) .qtitle{animation:brRise .55s cubic-bezier(.2,.8,.2,1) backwards}
+  .view:not([hidden]) .bignum{animation-delay:.04s}
+  .view:not([hidden]) .heroline{animation-delay:.12s}
+  .view:not([hidden]) .days{animation-delay:.18s}
+  .view:not([hidden]) .trio>*:nth-child(1){animation-delay:.22s}
+  .view:not([hidden]) .trio>*:nth-child(2){animation-delay:.28s}
+  .view:not([hidden]) .trio>*:nth-child(3){animation-delay:.34s}
+  .view:not([hidden]) .lb{animation-delay:.4s}
+  .view:not([hidden]) .wiqpanel{animation-delay:.46s}
+  .view:not([hidden]) .share{animation-delay:.52s}
+  /* leaderboard / upcoming rows stagger via --d set inline by app.js */
+  .lb .row{animation:brRise .5s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--d,0)*1ms)}
+  /* living hero: ember layer breathes, the big number slowly shimmers */
+  .hero-embers{animation:brGlow 7s ease-in-out infinite}
+  .bignum{background-size:220% auto;animation:brShimmer 9s linear infinite}
+  .conn.live .dot{animation:brPulse 2.6s ease-in-out infinite}
+  .btn.primary:hover::after{animation:brSheen .8s ease-out}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

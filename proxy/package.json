@@ -1,0 +1,15 @@
+{
+  "name": "burn-rate-workiq-proxy",
+  "version": "1.0.0",
+  "description": "Thin CORS relay so the Burn Rate static site can call the Work IQ A2A API with the signed-in user's delegated token.",
+  "main": "src/functions/*.js",
+  "scripts": {
+    "start": "func start"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.5.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -35,19 +35,23 @@ A pluggable data layer means the UI is identical in demo and live mode:
 
 Graph gives the exact, structured data; Work IQ gives the judgment. Each does what it's best at.
 
-## Use it on your real calendar — one command (Work IQ agent)
+## Use it on your real calendar — `/burn-rate` (Work IQ agent)
 
 If you have the **Work IQ MCP** in an agent (Claude Code, Copilot CLI, etc.), that agent
-*is* your Microsoft 365 connection — **no app registration, no proxy, no IT ticket.** Let it
-pull your week and open Burn Rate already filled in:
+*is* your Microsoft 365 connection — **no app registration, no proxy, no IT ticket.**
 
-- **Claude Code:** copy [`.claude/commands/burn-rate.md`](.claude/commands/burn-rate.md) into
-  your `~/.claude/commands/`, then run **`/burn-rate`**.
-- **Copilot CLI / any agent:** paste the prompt from that same file.
+**Claude Code** — install the skill once, then run **`/burn-rate`**:
+```bash
+mkdir -p ~/.claude/skills/burn-rate
+curl -fsSL https://raw.githubusercontent.com/andrey-esipov/meeting-cost-calculator/master/.claude/skills/burn-rate/SKILL.md \
+  -o ~/.claude/skills/burn-rate/SKILL.md
+```
+**Copilot CLI / any other agent:** paste the steps from
+[`.claude/skills/burn-rate/SKILL.md`](.claude/skills/burn-rate/SKILL.md) as your prompt.
 
-The agent fetches your meetings + attendee titles via Work IQ, base64-encodes them, and opens
+`/burn-rate` pulls your week + attendee titles via Work IQ, base64-encodes it, and opens
 `…/#data=<base64>`. Burn Rate reads the hash, costs your week, and shows the leaderboard +
-share card. **Nothing is uploaded** — the data only lives in your browser and the hash is
+share card. **Nothing is uploaded** — the week lives only in your browser and the hash is
 cleared on load; no sign-in.
 
 > Prefer to paste? Open Burn Rate → **Import your week** pill → **Use your Work IQ agent** →

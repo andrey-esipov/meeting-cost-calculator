@@ -184,4 +184,25 @@ html[data-theme="light"] .navbtn:hover,html[data-theme="light"] .navbtn.on{backg
   .conn.live .dot{animation:brPulse 2.6s ease-in-out infinite}
   .btn.primary:hover::after{animation:brSheen .8s ease-out}
 }
+/* ===================== Pixel-art layer ===================== */
+.brand{font-family:"Press Start 2P",ui-monospace,monospace;font-size:11.5px;letter-spacing:.01em;font-weight:400;gap:10px}
+.brand .logo{width:21px;height:21px}
+@keyframes brFlicker{0%,44%,56%,100%{opacity:1}50%{opacity:.34}}
+@keyframes brEmber{0%{transform:translateY(0);opacity:0}12%{opacity:.95}82%{opacity:.55}100%{transform:translateY(-330px) translateX(var(--ex,0));opacity:0}}
+.hero .pixel-office{position:absolute;top:4px;right:0;bottom:12px;left:auto;z-index:0;pointer-events:none;
+  display:grid;grid-template-columns:repeat(var(--cols,16),15px);grid-auto-rows:15px;gap:5px;
+  align-content:start;justify-content:end;opacity:.6;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 70%);mask-image:linear-gradient(90deg,transparent,#000 70%)}
+.hero .pixel-office .win{position:relative;width:15px;height:15px;border-radius:1px;background:#15151f;box-shadow:inset 0 0 0 1px #20202c}
+.hero .pixel-office .win.occ::after{content:"";position:absolute;left:3px;right:3px;bottom:0;height:6px;border-radius:1px 1px 0 0;background:rgba(0,0,0,.5)}
+.hero .pixel-office .win.lit{background:linear-gradient(180deg,var(--flame3),var(--flame2));box-shadow:0 0 7px rgba(255,138,44,.5);
+  animation:brFlicker var(--fl,3s) ease-in-out infinite;animation-delay:var(--fd,0s)}
+.hero .pixel-embers{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.hero .pixel-embers .pe{position:absolute;bottom:-6px;width:5px;height:5px;border-radius:1px;background:var(--flame3);
+  box-shadow:0 0 7px rgba(255,138,44,.75);opacity:0;animation:brEmber var(--ed,6s) linear infinite;animation-delay:var(--epd,0s)}
+.hero .scanlines{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.4;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.045) 0 1px,transparent 1px 3px)}
+html[data-theme="light"] .hero .pixel-office .win{background:#efe2d2;box-shadow:inset 0 0 0 1px #ecdcc7}
+html[data-theme="light"] .hero .pixel-office .win.lit{background:linear-gradient(180deg,#ff8a2c,#ff5a1f)}
+html[data-theme="light"] .hero .scanlines{display:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

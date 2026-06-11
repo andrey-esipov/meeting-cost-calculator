@@ -213,15 +213,56 @@
   async function reload() {
     renderConn();
     $("wiqNarrative").classList.add("skel"); $("wiqNarrative").textContent = "Reading your week…"; $("wiqRecs").innerHTML = "";
-    state.meetings = await S.meetings();
+    try {
+      state.meetings = await S.meetings();
+    } catch (e) {
+      // Live load failed (token, network, throttle). Never strand the user on a
+      // spinner — drop to demo data so the dashboard always renders.
+      console.warn("[Burn Rate] live load failed, falling back to demo:", e);
+      if (S.isLive()) S.signOut();
+      renderConn();
+      toast("Couldn't load your calendar — showing demo data.");
+      state.meetings = window.getSampleMeetings();
+    }
     renderWeek(E.computeWeek(state.meetings));
     renderUpcoming(E.computeUpcoming(state.meetings));
     try { renderInsight(await S.insight(state.week)); }
     catch (e) { renderInsight({ narrative: "Couldn't load insights right now.", recs: [] }); }
   }
 
+  // Pixel-art office backdrop + rising embers (the "money burning" motif).
+  function buildPixelLayer() {
+    var office = $("pixelOffice");
+    if (office && !office.children.length) {
+      var cols = 16, rows = 7, frag = document.createDocumentFragment();
+      office.style.setProperty("--cols", cols);
+      for (var i = 0; i < cols * rows; i++) {
+        var w = document.createElement("div");
+        if (Math.random() < 0.4) {
+          w.className = "win lit" + (Math.random() < 0.55 ? " occ" : "");
+          w.style.setProperty("--fl", (2.2 + Math.random() * 4).toFixed(2) + "s");
+          w.style.setProperty("--fd", (Math.random() * 3.5).toFixed(2) + "s");
+        } else { w.className = "win"; }
+        frag.appendChild(w);
+      }
+      office.appendChild(frag);
+    }
+    var embers = $("pixelEmbers");
+    if (embers && !embers.children.length) {
+      for (var j = 0; j < 18; j++) {
+        var p = document.createElement("div");
+        p.className = "pe";
+        p.style.left = (Math.random() * 100).toFixed(1) + "%";
+        p.style.setProperty("--ed", (4 + Math.random() * 4.5).toFixed(2) + "s");
+        p.style.setProperty("--epd", (Math.random() * 6).toFixed(2) + "s");
+        p.style.setProperty("--ex", (Math.random() * 44 - 22).toFixed(0) + "px");
+        embers.appendChild(p);
+      }
+    }
+  }
+
   async function init() {
-    initTheme(); initNav(); initConn(); initShare(); initQuick();
+    initTheme(); initNav(); initConn(); initShare(); initQuick(); buildPixelLayer();
     try { await S.restore(); } catch (e) {}
     await reload();
   }

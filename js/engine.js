@@ -51,9 +51,11 @@
     var wkEnd = new Date(wkStart); wkEnd.setDate(wkStart.getDate() + 7);
     var prevStart = new Date(wkStart); prevStart.setDate(wkStart.getDate() - 7);
 
+    // Work week (Mon-Fri) only, so the day-bars reconcile with the headline total.
     var week = [], prev = [];
     meetings.forEach(function (m) {
       var t = d(m.start);
+      if (((t.getDay() + 6) % 7) >= 5) return;   // skip Sat/Sun
       if (inRange(t, wkStart, wkEnd)) week.push(m);
       else if (inRange(t, prevStart, wkStart)) prev.push(m);
     });

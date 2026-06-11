@@ -5,6 +5,9 @@
 // is set; data-source.js falls back to the demo narrative on any failure.
 (function () {
   var cfg = window.BR_CONFIG;
+  // Work IQ returns model-authored text that app.js renders via innerHTML, so
+  // escape it here (trust boundary). Demo narrative is our own trusted HTML.
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
   function uuid() {
     if (crypto && crypto.randomUUID) return crypto.randomUUID();
@@ -62,9 +65,9 @@
       var m = t.match(/\(([^)]*\$[^)]*)\)\s*$/);
       var save = m ? m[1] : "";
       if (m) t = t.slice(0, m.index).trim().replace(/[—-]\s*$/, "").trim();
-      return { text: t, save: save };
+      return { text: esc(t), save: save };
     });
-    return { narrative: narrative || text, recs: recs };
+    return { narrative: esc(narrative || text), recs: recs };
   }
 
   window.BR_WORKIQ = { weekInsight: weekInsight, ask: ask };

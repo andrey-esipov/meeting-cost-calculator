@@ -25,7 +25,11 @@
 
   async function signIn() {
     var app = await client();
-    var res = await app.loginPopup({ scopes: cfg.graphScopes, prompt: "select_account" });
+    // Consent to Work IQ at sign-in too (when configured) so the insight token
+    // can later be acquired silently.
+    var scopes = cfg.graphScopes.slice();
+    if (cfg.workIqAvailable && cfg.workIq.scope) scopes.push(cfg.workIq.scope);
+    var res = await app.loginPopup({ scopes: scopes, prompt: "select_account" });
     app.setActiveAccount(res.account);
     return res.account;
   }
@@ -42,7 +46,9 @@
   }
 
   // Acquire a delegated token for any resource (Graph or Work IQ).
-  async function getToken(scopes) {
+  // interactive=false (default) is silent-only — NEVER pop a window without a
+  // user gesture (page-load token refreshes would otherwise be blocked and hang).
+  async function getToken(scopes, interactive) {
     var app = await client();
     var acct = app.getActiveAccount();
     if (!acct) throw new Error("Not signed in.");
@@ -50,6 +56,7 @@
       var r = await app.acquireTokenSilent({ account: acct, scopes: scopes });
       return r.accessToken;
     } catch (e) {
+      if (!interactive) throw e;   // caller (reload/insight) will catch and fall back to demo
       var r2 = await app.acquireTokenPopup({ scopes: scopes });
       return r2.accessToken;
     }
@@ -89,6 +96,7 @@
         headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      if (!res.ok) throw new Error("Graph $batch " + res.status);
       var data = await res.json();
       (data.responses || []).forEach(function (r) {
         var email = slice[Number(r.id)];
@@ -99,7 +107,16 @@
     return cache;
   }
 
-  function toDate(g) { return g && g.dateTime ? new Date(g.dateTime) : null; }
+  // Graph returns local-time strings (no 'Z') with 7 fractional digits when we
+  // send Prefer: outlook.timezone. Most engines parse that, but be defensive:
+  // fall back to an explicit local-time parse so a meeting never lands as NaN.
+  function toDate(g) {
+    if (!g || !g.dateTime) return null;
+    var d = new Date(g.dateTime);
+    if (!isNaN(d.getTime())) return d;
+    var m = g.dateTime.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/);
+    return m ? new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]) : null;
+  }
 
   async function getMeetings() {
     var token = await getToken(cfg.graphScopes);
@@ -113,11 +130,12 @@
       + "&$orderby=start/dateTime&$top=100";
 
     var events = [], page = url, guard = 0;
-    while (page && guard++ < 10) {
+    while (page && guard++ < 25) {           // up to 2500 events over the window
       var data = await graphGET(page, token);
       events = events.concat(data.value || []);
       page = data["@odata.nextLink"];
     }
+    if (page) console.warn("[Burn Rate] calendar truncated at " + events.length + " events");
     events = events.filter(function (e) { return !e.isCancelled && !e.isAllDay; });
 
     // resolve titles for all attendees

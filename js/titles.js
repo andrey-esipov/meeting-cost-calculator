@@ -68,7 +68,10 @@
   window.mapTitleToComp = function (jobTitle) {
     var t = (jobTitle || "").toLowerCase().trim();
     if (!t) {
-      return { name: "Unknown role", level: "62", annual: annualForLevel(62), discipline: "Engineering", estimated: true };
+      // External guests, rooms, and DLs come back from Graph with no title.
+      // Cost them conservatively (a mid IC) and flag as estimated, rather than
+      // billing every outsider as a senior Microsoft employee.
+      return { name: "Guest / unknown", level: "60", annual: annualForLevel(60), discipline: "Other", estimated: true };
     }
     var mgmt = isManagement(t);
     var discipline = mgmt ? "Management" : detectDiscipline(t);

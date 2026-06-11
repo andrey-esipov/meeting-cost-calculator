@@ -10,11 +10,13 @@
 const { app } = require('@azure/functions');
 
 const UPSTREAM = process.env.WORKIQ_ENDPOINT || 'https://workiq.svc.cloud.microsoft/a2a/';
+const ALLOWED = process.env.ALLOWED_ORIGIN || '';   // set this to your site origin
 
 function cors(origin) {
-  const allow = process.env.ALLOWED_ORIGIN || origin || '*';
+  // Never reflect to '*'. Echo only the configured origin (or the caller's when
+  // unconfigured, so local dev works) — but the real gate is the 403 below.
   return {
-    'Access-Control-Allow-Origin': allow,
+    'Access-Control-Allow-Origin': ALLOWED || origin || 'null',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Authorization, Content-Type, A2A-Version',
     'Access-Control-Max-Age': '86400',
@@ -30,6 +32,12 @@ app.http('workiq', {
     const headers = cors(origin);
 
     if (req.method === 'OPTIONS') return { status: 204, headers };
+
+    // Enforce the allowlist server-side — CORS only restrains browsers, not
+    // curl/server callers, so this relay would otherwise forward any token.
+    if (ALLOWED && origin && origin !== ALLOWED) {
+      return { status: 403, headers, jsonBody: { error: 'Origin not allowed' } };
+    }
 
     const auth = req.headers.get('authorization');
     if (!auth) return { status: 401, headers, jsonBody: { error: 'Missing Authorization' } };
@@ -54,8 +62,8 @@ app.http('workiq', {
         body: text,
       };
     } catch (e) {
-      ctx.error('Work IQ relay failed', e);
-      return { status: 502, headers, jsonBody: { error: 'Upstream request failed', detail: String(e) } };
+      ctx.error('Work IQ relay failed', e);   // detail stays server-side
+      return { status: 502, headers, jsonBody: { error: 'Upstream request failed' } };
     }
   },
 });

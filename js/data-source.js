@@ -51,9 +51,12 @@
       try {
         var r = await window.BR_WORKIQ.weekInsight(week);
         if (r) return r;
-      } catch (e) { console.warn("[Burn Rate] Work IQ insight failed, using fallback:", e); }
+      } catch (e) { console.warn("[Burn Rate] Work IQ insight failed, using local read:", e); }
     }
-    return window.getSampleInsight(week);
+    // No live Work IQ proxy: derive the read from the real numbers.
+    return (window.BR_ENGINE && window.BR_ENGINE.localInsight)
+      ? window.BR_ENGINE.localInsight(week)
+      : window.getSampleInsight(week);
   }
 
   async function signIn() {

@@ -121,9 +121,35 @@
     return "$" + Math.round(n);
   }
 
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  // A data-driven "read your week" from the real numbers — used whenever the
+  // live Work IQ narrative isn't wired (demo + signed-in-without-proxy).
+  // Escapes the meeting subject (untrusted in live mode) before it hits innerHTML.
+  function localInsight(week) {
+    var top = week.mostExpensive ? week.mostExpensive.meeting.subject : "your biggest meeting";
+    var topCost = week.mostExpensive ? week.mostExpensive.cost : 0;
+    var peak = (week.byDay || []).reduce(function (a, b) { return (!a || b.cost > a.cost) ? b : a; }, null);
+    var peakLabel = peak ? peak.label : "Thursday";
+    var narrative = "Your week ran <span class='hl'>" + money(week.total) + "</span> across <b>" + week.count +
+      "</b> meetings. <b>" + peakLabel + "</b> was your priciest day" +
+      (topCost ? ", and <span class='hl'>" + esc(top) + "</span> alone cost " + money(topCost) +
+        " (" + money(topCost * 50) + "/yr if it recurs weekly)." : ".");
+    var recs = [];
+    if (week.emailable && week.emailable.count) {
+      recs.push({ text: "<b>" + week.emailable.count + "</b> of these look async-able — a Loom + a Loop covers it.", save: "~" + money(week.emailable.cost) + "/wk" });
+    }
+    if (topCost) {
+      recs.push({ text: "Trim the <b>" + esc(top) + "</b> invite to deciders; make the rest optional.", save: "~" + money(topCost * 0.4) + "/wk" });
+    }
+    recs.push({ text: "Block <b>" + peakLabel + "</b> mornings for focus before the calendar fills.", save: "+" + Math.max(2, Math.round((week.hours || 0) / 6)) + " hrs" });
+    return { narrative: narrative, recs: recs.slice(0, 3) };
+  }
+
   window.BR_ENGINE = {
     meetingCost: meetingCost, isEmailable: isEmailable, perHour: perHour,
     computeWeek: computeWeek, computeUpcoming: computeUpcoming,
     money: money, moneyK: moneyK, attendeeAnnual: attendeeAnnual,
+    localInsight: localInsight,
   };
 })();

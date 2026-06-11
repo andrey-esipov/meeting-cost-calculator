@@ -80,31 +80,22 @@
   function loadTitleCache() { try { return JSON.parse(localStorage.getItem(TITLE_CACHE_KEY) || "{}"); } catch (e) { return {}; } }
   function saveTitleCache(c) { try { localStorage.setItem(TITLE_CACHE_KEY, JSON.stringify(c)); } catch (e) {} }
 
-  // Resolve job titles for a set of emails via $batch (<=20/request), cached.
-  async function resolveTitles(emails, token) {
-    var cache = loadTitleCache();
-    var misses = emails.filter(function (e) { return e && !(e.toLowerCase() in cache); });
-    for (var i = 0; i < misses.length; i += 20) {
-      var slice = misses.slice(i, i + 20);
-      var body = {
-        requests: slice.map(function (e, idx) {
-          return { id: String(idx), method: "GET", url: "/users/" + encodeURIComponent(e) + "?$select=displayName,jobTitle,department" };
-        }),
-      };
-      var res = await fetch("https://graph.microsoft.com/v1.0/$batch", {
-        method: "POST",
-        headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+  // Build an email -> jobTitle map from /me/people (scope People.Read, no admin
+  // consent). This covers the colleagues you actually meet with; unknowns fall
+  // back to an estimated band in titles.js. One call, cached.
+  async function resolvePeopleTitles(token) {
+    var map = loadTitleCache();
+    try {
+      var data = await graphGET("https://graph.microsoft.com/v1.0/me/people?$top=1000&$select=displayName,jobTitle,scoredEmailAddresses", token);
+      (data.value || []).forEach(function (p) {
+        var title = p.jobTitle || "";
+        (p.scoredEmailAddresses || []).forEach(function (e) {
+          if (e.address) map[e.address.toLowerCase()] = title;
+        });
       });
-      if (!res.ok) throw new Error("Graph $batch " + res.status);
-      var data = await res.json();
-      (data.responses || []).forEach(function (r) {
-        var email = slice[Number(r.id)];
-        cache[email.toLowerCase()] = (r.status === 200 && r.body) ? (r.body.jobTitle || "") : "";
-      });
-    }
-    saveTitleCache(cache);
-    return cache;
+      saveTitleCache(map);
+    } catch (e) { console.warn("[Burn Rate] /me/people failed:", e); }
+    return map;
   }
 
   // Graph returns local-time strings (no 'Z') with 7 fractional digits when we
@@ -138,10 +129,13 @@
     if (page) console.warn("[Burn Rate] calendar truncated at " + events.length + " events");
     events = events.filter(function (e) { return !e.isCancelled && !e.isAllDay; });
 
-    // resolve titles for all attendees
-    var emails = {};
-    events.forEach(function (e) { (e.attendees || []).forEach(function (a) { if (a.emailAddress) emails[a.emailAddress.address] = 1; }); });
-    var titles = await resolveTitles(Object.keys(emails), token);
+    // resolve attendee job titles via /me/people (People.Read, no admin consent)
+    var titles = await resolvePeopleTitles(token);
+    try {   // add the signed-in user's own title (from /me, User.Read)
+      var me = await graphGET("https://graph.microsoft.com/v1.0/me?$select=mail,userPrincipalName,jobTitle", token);
+      var myEmail = (me.mail || me.userPrincipalName || "").toLowerCase();
+      if (myEmail) titles[myEmail] = me.jobTitle || "";
+    } catch (e) {}
 
     return events.map(function (e) {
       var s = toDate(e.start), en = toDate(e.end);

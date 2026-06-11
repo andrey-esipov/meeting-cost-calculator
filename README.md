@@ -73,27 +73,34 @@ Let it fetch your week and paste the result in:
 Your real meetings, costed, with the share card. The data stays in your browser
 (`localStorage`) — nothing is uploaded anywhere.
 
-## Go live automatically (one-time setup)
+## Connect your real calendar — one click for the whole team (~10 min, once)
 
-Demo mode needs nothing. To cost **real** calendars for your team:
+Demo mode needs nothing. To switch on the **"Sign in with Microsoft"** button so every
+colleague sees their *own* real week, do this **once** — no proxy, no admin consent, no IT ticket:
 
-1. **Register an Entra app** (Azure portal → *App registrations* → *New*):
-   - Platform: **Single-page application**
-   - Redirect URIs: your Pages URL (e.g. `https://andrey-esipov.github.io/meeting-cost-calculator/`) and `http://localhost:8899/` for local dev.
-   - Note the **Application (client) ID** and your **tenant ID**.
-2. **API permissions** (delegated), then **Grant admin consent**:
-   - Microsoft Graph: `User.Read`, `Calendars.Read`, `User.ReadBasic.All`
-   - Work IQ: `WorkIQAgent.Ask` (search *"Work IQ"* under *APIs my organization uses*, or add it in the manifest: resource `api://workiq.svc.cloud.microsoft`).
-3. **Deploy the Work IQ proxy** — see [`proxy/README.md`](proxy/README.md) (~5 min on Azure Functions).
-4. **Fill in `js/config.js`**:
-   ```js
-   msal:   { clientId: "<your client id>", tenantId: "<your tenant id>", ... }
-   workIq: { proxyUrl: "https://<your-proxy>/api/workiq", ... }
-   ```
-5. Push. Now every colleague just clicks **Sign in with Microsoft** — nothing to set up on their end.
+1. **Register an Entra app** — [Azure portal](https://portal.azure.com) → *App registrations* → *New registration*:
+   - Name: `Burn Rate`
+   - Supported account types: **Accounts in this organizational directory only**
+   - **Redirect URI**: platform **Single-page application (SPA)**, value `https://andrey-esipov.github.io/meeting-cost-calculator/` (add `http://localhost:8899/` if you run it locally)
+   - Register, then copy the **Application (client) ID**.
+2. **Add Graph permissions** — *API permissions* → *Microsoft Graph* → *Delegated* →
+   `User.Read`, `Calendars.Read`, `People.Read`. These are **user-consentable** — each
+   colleague approves them on their first sign-in. **No "Grant admin consent" needed.**
+3. **Turn it on** — open Burn Rate → the **Import your week** pill → **Setup (one-time, admin)** →
+   paste the **Client ID** (leave Tenant as `organizations`) → **Save & reload.**
+   (Or hardcode it in `js/config.js` and push — same effect.)
 
-Requires Microsoft 365 Copilot + Work IQ enabled in your tenant (for the insight layer).
-The cost numbers work for everyone regardless.
+Done. The pill becomes **Sign in with Microsoft** for everyone. One click → their real
+calendar loads, attendee titles resolve via `/me/people`, the dashboard fills in. Tokens
+and data stay in the browser (MSAL `localStorage`); nothing hits a server you run.
+
+**Optional — live Work IQ narrative.** The "read your week" panel runs on a local estimate
+by default. To have it *written by Work IQ* instead, deploy the ~30-line relay in
+[`proxy/`](proxy/README.md) and paste its URL in the same Setup box (needs M365 Copilot + Work IQ).
+Everything else works without it.
+
+**No Azure access?** Colleagues can still use it with zero setup via their Work IQ agent —
+see the section above.
 
 ## Local dev
 

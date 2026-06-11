@@ -135,8 +135,10 @@
     $("wiqNarrative").classList.remove("skel");
     $("wiqNarrative").innerHTML = ins.narrative || "No standout patterns this week.";
     var badge = $("wiqBadge");
-    badge.textContent = S.isLive() && CFG.workIqAvailable ? "live" : "demo";
-    badge.classList.toggle("live", S.isLive() && CFG.workIqAvailable);
+    var wiqLive = S.isLive() && CFG.workIqAvailable;
+    var realData = S.isLive() || (S.isImported && S.isImported());
+    badge.textContent = wiqLive ? "Work IQ" : (realData ? "estimate" : "demo");
+    badge.classList.toggle("live", wiqLive);
     $("wiqRecs").innerHTML = (ins.recs || []).map(function (r) {
       return '<div class="rec"><span class="chk">→</span><div>' + r.text + "</div>" +
         (r.save ? '<span class="save">' + escapeHtml(r.save) + "</span>" : "") + "</div>";

@@ -19,7 +19,9 @@ window.BR_CONFIG = {
     get authority() { return "https://login.microsoftonline.com/" + this.tenantId; },
     redirectUri: window.location.origin + window.location.pathname,
   },
-  graphScopes: ["User.Read", "Calendars.Read", "User.ReadBasic.All"],
+  // All delegated + user-consentable (no admin consent): your profile, your
+  // calendar, and your relevant people (for attendee job titles via /me/people).
+  graphScopes: ["User.Read", "Calendars.Read", "People.Read"],
 
   // ---- Work IQ (the "read your week" insight layer) ----
   workIq: {

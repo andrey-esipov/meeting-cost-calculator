@@ -205,4 +205,37 @@ html[data-theme="light"] .navbtn:hover,html[data-theme="light"] .navbtn.on{backg
 html[data-theme="light"] .hero .pixel-office .win{background:#efe2d2;box-shadow:inset 0 0 0 1px #ecdcc7}
 html[data-theme="light"] .hero .pixel-office .win.lit{background:linear-gradient(180deg,#ff8a2c,#ff5a1f)}
 html[data-theme="light"] .hero .scanlines{display:none}
+/* ===================== Retro-arcade uplevel ===================== */
+/* Hard pixel borders + offset shadows instead of soft rounded cards (de-slop). */
+.card{border:2px solid var(--line2);border-radius:4px;box-shadow:5px 5px 0 rgba(0,0,0,.45)}
+.stat,.wiqpanel,.lb{transition:transform .12s steps(2,end),box-shadow .12s steps(2,end)}
+.stat:hover,.wiqpanel:hover,.lb:hover{transform:translate(-1px,-1px);box-shadow:7px 7px 0 rgba(0,0,0,.5)}
+.row{border-top:2px solid var(--line)}
+/* Pixel font for SHORT labels only — numbers, body, long pills stay legible. */
+.eyebrow,.lb h3,.wiqpanel h3,.stat .k,.navbtn,.wiq-badge{font-family:"Press Start 2P",ui-monospace,monospace}
+.eyebrow{font-size:9px;letter-spacing:.04em;line-height:1.7}
+.lb h3,.wiqpanel h3{font-size:10px;letter-spacing:.01em;line-height:1.7;gap:7px}
+.stat .k{font-size:8px;letter-spacing:0;line-height:1.8}
+.navbtn{font-size:9px;letter-spacing:0;padding:9px 12px}
+.navbtn.on::after{left:12px;right:12px;height:3px}
+.wiq-badge{font-size:7px;padding:3px 6px}
+/* Arcade buttons: hard border + chunky offset shadow + press-down. */
+.btn.primary{font-family:"Press Start 2P",sans-serif;font-size:12px;letter-spacing:.02em;padding:16px 22px;border:2px solid #1a0d05;border-radius:4px;box-shadow:4px 4px 0 rgba(110,38,0,.6)}
+.btn.primary:hover{transform:translate(-1px,-1px);box-shadow:6px 6px 0 rgba(110,38,0,.65)}
+.btn.primary:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(110,38,0,.65)}
+.btn.primary::after{display:none}
+.btn.ghost{font-family:"Press Start 2P",sans-serif;font-size:8.5px;letter-spacing:0;border:2px solid var(--line2);border-radius:4px;box-shadow:3px 3px 0 rgba(0,0,0,.4);padding:14px 16px}
+.btn.ghost:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(0,0,0,.45)}
+.btn.ghost:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.45)}
+/* Big number: hard arcade 3D drop-shadow (filter works on gradient-clipped text). */
+.bignum{filter:drop-shadow(3px 4px 0 rgba(110,38,0,.6)) drop-shadow(0 10px 44px rgba(255,106,44,.3))}
+/* Animated flame logo. */
+.brand .logo{transform-origin:50% 78%;animation:brFlame 1.05s steps(3,end) infinite}
+@keyframes brFlame{0%{transform:scale(1,1) skewX(0)}25%{transform:scale(1.1,.92) skewX(-3deg)}50%{transform:scale(.94,1.09) skewX(2deg)}75%{transform:scale(1.07,.95) skewX(-2deg)}100%{transform:scale(1,1) skewX(0)}}
+/* Stronger CRT: brighter scanlines + vignette over the hero. */
+.hero .scanlines{opacity:.6}
+.hero::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(125% 95% at 50% 28%,transparent 58%,rgba(0,0,0,.5));mix-blend-mode:multiply}
+html[data-theme="light"] .card{box-shadow:5px 5px 0 rgba(255,106,44,.18)}
+html[data-theme="light"] .hero::after{display:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

@@ -5,12 +5,14 @@
   --ink:#F5F3EF; --mut:#9A97A4; --mut2:#6E6B78;
   --flame1:#FF5A1F; --flame2:#FF8A2C; --flame3:#FFC24B; --green:#1FBF73; --rise:#FF566E;
   --r:18px; --maxw:1080px;
+  --font-pixel:"Press Start 2P",ui-monospace,monospace;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   --grad-flame:linear-gradient(135deg,#fff 4%,var(--flame3) 38%,var(--flame2) 70%,var(--flame1) 100%);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  font-family:"Segoe UI Variable Text","Segoe UI",Inter,system-ui,sans-serif;
+  font-family:var(--font-mono);
   background:
     radial-gradient(1100px 560px at 78% -8%,rgba(255,106,44,.16),transparent 60%),
     radial-gradient(800px 460px at 12% 2%,rgba(255,86,110,.07),transparent 55%),
@@ -47,10 +49,10 @@ body{
   opacity:.5;pointer-events:none;-webkit-mask-image:linear-gradient(90deg,transparent,#000 55%);mask-image:linear-gradient(90deg,transparent,#000 55%);border-radius:0 0 0 40px}
 .hero>*{position:relative;z-index:1}
 .eyebrow{font-size:12.5px;font-weight:800;letter-spacing:.3em;text-transform:uppercase;color:var(--mut)}
-.bignum{font-family:Anton,'Segoe UI',Impact,sans-serif;font-weight:400;line-height:.82;letter-spacing:.005em;
-  font-size:clamp(82px,15vw,210px);margin:14px 0 2px;background:var(--grad-flame);-webkit-background-clip:text;background-clip:text;color:transparent;
+.bignum{font-family:var(--font-pixel);font-weight:400;line-height:1.05;letter-spacing:.005em;
+  font-size:clamp(38px,7.4vw,104px);margin:18px 0 8px;background:var(--grad-flame);-webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(0 10px 56px rgba(255,106,44,.34))}
-.bignum.sm{font-size:clamp(56px,9vw,104px);margin:10px 0}
+.bignum.sm{font-size:clamp(28px,5vw,58px);margin:12px 0}
 .qtitle{font-size:clamp(30px,5vw,46px);font-weight:800;letter-spacing:-.02em;margin:8px 0 0}
 .heroline{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
 .delta{display:inline-flex;align-items:center;gap:5px;font-size:15px;font-weight:800;color:var(--rise);background:rgba(255,86,110,.12);border:1px solid rgba(255,86,110,.28);padding:6px 11px;border-radius:11px}
@@ -238,4 +240,30 @@ html[data-theme="light"] .hero .scanlines{display:none}
   background:radial-gradient(125% 95% at 50% 28%,transparent 58%,rgba(0,0,0,.5));mix-blend-mode:multiply}
 html[data-theme="light"] .card{box-shadow:5px 5px 0 rgba(255,106,44,.18)}
 html[data-theme="light"] .hero::after{display:none}
+/* ===================== Arcade+ ===================== */
+.stat .v{font-family:var(--font-pixel);font-size:19px;line-height:1.5;letter-spacing:-.01em}
+.qtitle{font-family:var(--font-pixel);font-size:clamp(20px,3.4vw,30px);line-height:1.4}
+/* neon delta chip (stays mono so "vs last week" fits) */
+.delta{border-width:2px;box-shadow:3px 3px 0 rgba(0,0,0,.4)}
+/* burning $ bill sprite */
+.hero .burning-bill{position:absolute;top:96px;right:22px;width:104px;z-index:1;pointer-events:none;animation:billBob 2.8s ease-in-out infinite}
+.hero .burning-bill svg{width:100%;height:auto;filter:drop-shadow(0 8px 16px rgba(255,106,44,.45))}
+.burning-bill .f{transform-origin:50% 100%}
+.burning-bill .f1{animation:flameA .42s steps(2,end) infinite}
+.burning-bill .f2{animation:flameB .34s steps(2,end) infinite}
+.burning-bill .f3{animation:flameA .52s steps(2,end) .15s infinite}
+@keyframes flameA{0%,100%{transform:scaleY(1);opacity:1}50%{transform:scaleY(.66);opacity:.7}}
+@keyframes flameB{0%,100%{transform:scaleY(.82);opacity:.85}50%{transform:scaleY(1.12);opacity:1}}
+@keyframes billBob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+/* blinking insert-coin flourish */
+.insert-coin{font-family:var(--font-pixel);font-size:9px;color:var(--flame3);letter-spacing:.04em;margin:22px 0 -4px;
+  text-shadow:0 0 8px rgba(255,138,44,.6);animation:blink 1.05s steps(2,start) infinite}
+@keyframes blink{0%,55%{opacity:1}56%,100%{opacity:.12}}
+/* CRT power-on, one-time (opacity:0 base keeps it safe under reduced-motion) */
+.hero .crt-on{position:absolute;inset:0;z-index:3;pointer-events:none;background:#fff;opacity:0;animation:crtOn .72s ease-out forwards}
+@keyframes crtOn{0%{opacity:.95;transform:scaleY(.005);filter:brightness(3)}12%{opacity:.85;transform:scaleY(.03)}45%{transform:scaleY(1);opacity:.22}100%{opacity:0;transform:scaleY(1)}}
+/* dial the office windows back a touch so the burning bill reads */
+.hero .pixel-office{opacity:.42}
+html[data-theme="light"] .insert-coin{text-shadow:none}
+@media (max-width:760px){.hero .burning-bill{display:none}.bignum{font-size:clamp(32px,11vw,56px)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

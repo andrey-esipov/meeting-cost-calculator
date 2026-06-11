@@ -12,7 +12,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%94%A5%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Press+Start+2P&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -42,6 +42,22 @@
         <div class="pixel-office" id="pixelOffice" aria-hidden="true"></div>
         <div class="pixel-embers" id="pixelEmbers" aria-hidden="true"></div>
         <div class="scanlines" aria-hidden="true"></div>
+        <div class="crt-on" aria-hidden="true"></div>
+        <div class="burning-bill" aria-hidden="true">
+          <svg viewBox="0 0 100 76" shape-rendering="crispEdges">
+            <rect class="f f1" x="26" y="10" width="10" height="20" fill="#ff5a1f"/>
+            <rect class="f f3" x="62" y="12" width="10" height="18" fill="#ff5a1f"/>
+            <rect class="f f2" x="44" y="3"  width="12" height="27" fill="#ffb000"/>
+            <rect class="f f2" x="46" y="0"  width="6"  height="12" fill="#ffe08a"/>
+            <rect x="8" y="30" width="84" height="42" fill="#157a42"/>
+            <rect x="8" y="30" width="84" height="42" fill="none" stroke="#0c5a30" stroke-width="2"/>
+            <rect x="13" y="35" width="74" height="32" fill="none" stroke="#3ad07f" stroke-width="2"/>
+            <circle cx="50" cy="51" r="11" fill="#0e6336"/>
+            <rect x="48" y="41" width="4" height="20" fill="#dff3e8"/>
+            <rect x="43" y="45" width="14" height="3" fill="#dff3e8"/>
+            <rect x="43" y="54" width="14" height="3" fill="#dff3e8"/>
+          </svg>
+        </div>
         <div class="eyebrow" id="heroEyebrow">Your meetings · this week</div>
         <div class="bignum" id="bignum">$0</div>
         <div class="heroline">
@@ -68,6 +84,7 @@
         <div class="recs" id="wiqRecs"></div>
       </div>
 
+      <div class="insert-coin" aria-hidden="true">▸ insert coin to skip the meeting</div>
       <div class="share">
         <button class="btn primary" id="flexBtn">🔥 Flex on Teams →</button>
         <button class="btn ghost" id="copyBtn">Copy summary</button>

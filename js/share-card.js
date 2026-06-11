@@ -20,32 +20,32 @@
     var pad = 70;
     // top row
     x.textBaseline = "alphabetic";
-    x.font = "800 38px 'Segoe UI', Inter, sans-serif"; x.fillStyle = "#F5F3EF";
-    x.fillText("🔥 Burn Rate", pad, pad + 24);
-    x.font = "600 22px 'Segoe UI', Inter, sans-serif"; x.fillStyle = "#FFC24B";
-    x.textAlign = "right"; x.fillText("Powered by Work IQ", W - pad, pad + 20); x.textAlign = "left";
+    x.font = "22px 'Press Start 2P', monospace"; x.fillStyle = "#F5F3EF";
+    x.fillText("🔥 Burn Rate", pad, pad + 28);
+    x.font = "12px 'Press Start 2P', monospace"; x.fillStyle = "#FFC24B";
+    x.textAlign = "right"; x.fillText("POWERED BY WORK IQ", W - pad, pad + 24); x.textAlign = "left";
 
     // eyebrow
-    x.font = "700 24px 'Segoe UI', Inter, sans-serif"; x.fillStyle = "#9A97A4";
+    x.font = "13px 'Press Start 2P', monospace"; x.fillStyle = "#9A97A4";
     x.fillText("MY MEETINGS · THIS WEEK", pad, 200);
 
     // big number (flame gradient)
     var grad = x.createLinearGradient(pad, 220, pad, 360);
     grad.addColorStop(0, "#FFFFFF"); grad.addColorStop(0.45, "#FFC24B");
     grad.addColorStop(0.8, "#FF8A2C"); grad.addColorStop(1, "#FF5A1F");
-    x.font = "400 150px Anton, 'Segoe UI', Impact, sans-serif"; x.fillStyle = grad;
-    x.fillText(money(week.total), pad - 4, 340);
+    x.font = "92px 'Press Start 2P', monospace"; x.fillStyle = grad;
+    x.fillText(money(week.total), pad - 4, 330);
 
     // delta + subline
-    x.font = "700 30px 'Segoe UI', Inter, sans-serif"; x.fillStyle = "#FF566E";
+    x.font = "700 26px 'JetBrains Mono', monospace"; x.fillStyle = "#FF566E";
     var deltaTxt = week.deltaPct != null ? ("▲ " + week.deltaPct + "% vs last week") : "";
     x.fillText(deltaTxt, pad, 392);
-    x.font = "500 30px 'Segoe UI', Inter, sans-serif"; x.fillStyle = "#C9C6CF";
+    x.font = "500 26px 'JetBrains Mono', monospace"; x.fillStyle = "#C9C6CF";
     x.fillText(week.count + " meetings   ·   " + week.hours + " hours   ·   " + week.people + " people", pad, 444);
 
     // leaderboard top 3
     var medals = ["🥇", "🥈", "🥉"];
-    x.font = "600 28px 'Segoe UI', Inter, sans-serif";
+    x.font = "600 24px 'JetBrains Mono', monospace";
     (week.leaderboard || []).slice(0, 3).forEach(function (item, i) {
       var y = 506 + i * 40;
       x.fillStyle = "#E7E4DE";

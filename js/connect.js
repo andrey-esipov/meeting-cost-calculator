@@ -108,6 +108,8 @@ font-size:12.5px;cursor:pointer;padding:6px 8px;border-radius:8px;font-family:in
 transition:color .15s,background .15s;}\
 .brc-reset:hover{color:var(--flame3,#ff2d55);background:var(--card2,#1d1f27);}\
 .brc-overlay :focus-visible{outline:2px solid var(--flame2,#ff5e3a);outline-offset:2px;}\
+.brc-json{width:100%;box-sizing:border-box;margin-top:6px;padding:10px;border-radius:10px;border:1px solid var(--line2,#34373f);background:var(--bg,#0b0c10);color:var(--ink,#f3f3f5);font-family:ui-monospace,monospace;font-size:11px;line-height:1.5;resize:vertical;}\
+.brc-json:focus{outline:none;border-color:var(--flame2,#ff5e3a);box-shadow:0 0 0 3px rgba(255,94,58,.18);}\
 html[data-theme="light"] .brc-overlay{background:rgba(20,20,25,.32);}\
 html[data-theme="light"] .brc-btn-primary{color:#fff;}\
 html[data-theme="light"] .brc-spin{border-color:rgba(255,255,255,.4);border-top-color:#fff;}\
@@ -152,6 +154,7 @@ html[data-theme="light"] .brc-spin{border-color:rgba(255,255,255,.4);border-top-
     var acctName = acct ? (acct.name || acct.username || "your account") : "";
     var workIqReady = !!cfg().workIqAvailable;
     var canSignIn = !!cfg().liveAvailable;
+    var imported = !!(src().isImported && src().isImported());
 
     card.innerHTML = '\
 <div class="brc-head">\
@@ -182,6 +185,16 @@ html[data-theme="light"] .brc-spin{border-color:rgba(255,255,255,.4);border-top-
 <div class="brc-actions">' + actionMarkup(live, canSignIn) + '\
   <div class="brc-err" data-brc-err hidden></div>\
 </div>\
+<details class="brc-details"' + (imported ? " open" : "") + '>\
+  <summary class="brc-summary">Use your Work IQ agent' + (imported ? "  ✓ loaded" : "") + '</summary>\
+  <p class="brc-help">In Copilot CLI or Claude Code (with the Work IQ MCP), run the Burn Rate prompt, then paste the JSON it prints here. No sign-in needed.</p>\
+  <textarea id="brc-json" class="brc-json" rows="5" spellcheck="false" placeholder="[ {&quot;subject&quot;:&quot;Weekly Sync&quot;, &quot;start&quot;:&quot;2026-06-09T09:00&quot;, &quot;end&quot;:&quot;2026-06-09T10:00&quot;, &quot;attendees&quot;:[{&quot;name&quot;:&quot;Dana&quot;,&quot;title&quot;:&quot;Principal PM&quot;}]} ]"></textarea>\
+  <div class="brc-setup-actions">\
+    <button type="button" class="brc-btn brc-btn-primary" data-brc-import>Load my week</button>\
+    ' + (imported ? '<button type="button" class="brc-reset" data-brc-clearimport>Back to demo</button>' : "") + '\
+  </div>\
+  <div class="brc-err" data-brc-import-err hidden></div>\
+</details>\
 <details class="brc-details">\
   <summary class="brc-summary">Setup (one-time, admin)</summary>\
   <div class="brc-field">\
@@ -280,6 +293,29 @@ html[data-theme="light"] .brc-spin{border-color:rgba(255,255,255,.4);border-top-
         lsSet(LS.client, "");
         lsSet(LS.tenant, "");
         lsSet(LS.proxy, "");
+        location.reload();
+      });
+    }
+
+    // Import from a Work IQ agent: paste JSON -> store -> reload into real data.
+    var importBtn = card.querySelector("[data-brc-import]");
+    if (importBtn) {
+      importBtn.addEventListener("click", function () {
+        var ta = card.querySelector("#brc-json");
+        var ierr = card.querySelector("[data-brc-import-err]");
+        if (ierr) ierr.hidden = true;
+        try {
+          window.BR_SOURCE.importJson(ta ? ta.value : "");
+          location.reload();
+        } catch (e) {
+          if (ierr) { ierr.textContent = (e && e.message) ? e.message : "Couldn't read that JSON."; ierr.hidden = false; }
+        }
+      });
+    }
+    var clearImp = card.querySelector("[data-brc-clearimport]");
+    if (clearImp) {
+      clearImp.addEventListener("click", function () {
+        if (window.BR_SOURCE.clearImport) window.BR_SOURCE.clearImport();
         location.reload();
       });
     }

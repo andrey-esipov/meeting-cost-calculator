@@ -8,8 +8,39 @@
 
   function signedInLive() { return state.live && !!state.account; }
 
+  // Imported data: a colleague's Work IQ agent (Copilot CLI / Claude Code, etc.)
+  // emits their real week as JSON; we store it and cost it locally. No Entra app,
+  // no proxy — the agent's Work IQ MCP is the M365 connection.
+  function normImported(m) {
+    if (!m || !m.start) return null;
+    var s = new Date(m.start), e = m.end ? new Date(m.end) : null;
+    var dur = m.durationMin != null ? m.durationMin : (e ? Math.round((e - s) / 60000) : 30);
+    return {
+      id: m.id || (m.subject || "m") + "-" + (+s),
+      subject: m.subject || "(no subject)",
+      start: s, end: e || new Date(+s + dur * 60000), durationMin: dur,
+      isRecurring: !!(m.recurring || m.isRecurring), organizer: m.organizer || "", online: true,
+      attendees: (m.attendees || []).map(function (a) {
+        return { name: a.name || a.email || "", email: a.email || "", jobTitle: a.title || a.jobTitle || "" };
+      }),
+    };
+  }
+  function getImported() {
+    try {
+      var raw = localStorage.getItem("br_meetings");
+      if (!raw) return null;
+      var arr = JSON.parse(raw);
+      if (!Array.isArray(arr) || !arr.length) return null;
+      var norm = arr.map(normImported).filter(Boolean);
+      return norm.length ? norm : null;
+    } catch (e) { return null; }
+  }
+  function hasImport() { return !signedInLive() && !!getImported(); }
+
   async function meetings() {
     if (signedInLive() && window.BR_GRAPH) return window.BR_GRAPH.getMeetings();
+    var imp = getImported();
+    if (imp) return imp;             // imported from a Work IQ agent
     return window.getSampleMeetings();
   }
 
@@ -56,6 +87,16 @@
     signOut: signOut,
     restore: restore,
     isLive: signedInLive,
+    isImported: hasImport,
+    importJson: function (text) {
+      var arr = JSON.parse(text);
+      if (!Array.isArray(arr)) throw new Error("Expected a JSON array of meetings.");
+      var norm = arr.map(normImported).filter(Boolean);
+      if (!norm.length) throw new Error("No valid meetings found in that JSON.");
+      localStorage.setItem("br_meetings", JSON.stringify(arr));
+      return norm.length;
+    },
+    clearImport: function () { try { localStorage.removeItem("br_meetings"); } catch (e) {} },
     canSignIn: function () { return window.BR_CONFIG.liveAvailable; },
     account: function () { return state.account; },
   };

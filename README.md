@@ -35,7 +35,45 @@ A pluggable data layer means the UI is identical in demo and live mode:
 
 Graph gives the exact, structured data; Work IQ gives the judgment. Each does what it's best at.
 
-## Go live (one-time setup)
+## Use it on your real calendar — the easy way (Work IQ agent)
+
+If you already have the **Work IQ MCP** wired into an agent (Copilot CLI, Claude Code, etc.),
+that agent *is* your Microsoft 365 connection — **no app registration, no proxy, no IT ticket.**
+Let it fetch your week and paste the result in:
+
+1. In your agent, run this prompt:
+
+   ```
+   You have the Work IQ MCP connected. Build my "Burn Rate" week:
+   1. Use Work IQ to list my calendar meetings from 14 days ago through 14 days from now.
+   2. For each meeting, get its attendees and each attendee's job title
+      (use Work IQ's people / org context). Use "" if a title is unknown.
+   3. Print ONLY a JSON array (no prose, no code fences) in exactly this shape:
+
+   [
+     {
+       "subject": "Weekly Staff Sync",
+       "start": "2026-06-09T09:00",
+       "end":   "2026-06-09T10:00",
+       "recurring": true,
+       "attendees": [
+         { "name": "Dana Wu",  "title": "Principal Product Manager" },
+         { "name": "Sam Ortiz", "title": "Engineering Manager" }
+       ]
+     }
+   ]
+
+   Rules: local ISO times (no timezone suffix is fine); "recurring": true for recurring
+   meetings; include every attendee with their best-known title. Output the JSON array only.
+   ```
+
+2. Open Burn Rate → click the **Import your week** pill (top-right) → **Use your Work IQ
+   agent** → paste the JSON → **Load my week.**
+
+Your real meetings, costed, with the share card. The data stays in your browser
+(`localStorage`) — nothing is uploaded anywhere.
+
+## Go live automatically (one-time setup)
 
 Demo mode needs nothing. To cost **real** calendars for your team:
 

@@ -53,10 +53,12 @@
     if (S.isLive()) {
       var name = (S.account() && (S.account().name || S.account().username)) || "Connected";
       btn.classList.add("live"); label.textContent = "Connected · Work IQ"; btn.dataset.short = "Live"; btn.title = name + " — click to sign out";
+    } else if (S.isImported && S.isImported()) {
+      btn.classList.add("live"); label.textContent = "Work IQ data"; btn.dataset.short = "Work IQ"; btn.title = "Imported from your Work IQ agent — click to manage";
     } else if (S.canSignIn()) {
       btn.classList.remove("live"); label.textContent = "Sign in with Microsoft"; btn.dataset.short = "Sign in"; btn.title = "Connect your real calendar";
     } else {
-      btn.classList.remove("live"); label.textContent = "Demo data"; btn.dataset.short = "Demo"; btn.title = "Add a client ID in js/config.js to go live (see README)";
+      btn.classList.remove("live"); label.textContent = "Import your week"; btn.dataset.short = "Import"; btn.title = "Paste your week from a Work IQ agent (Copilot CLI / Claude Code) — see README";
     }
   }
   function initConn() {
@@ -71,7 +73,8 @@
   /* ---------- This Week ---------- */
   function renderWeek(w) {
     state.week = w;
-    $("heroEyebrow").textContent = (S.isLive() ? "Your meetings" : "Your meetings (demo)") + " · this week";
+    var realData = S.isLive() || (S.isImported && S.isImported());
+    $("heroEyebrow").textContent = (realData ? "Your meetings" : "Your meetings (demo)") + " · this week";
     countUp($("bignum"), w.total);
 
     var delta = $("delta");
@@ -122,10 +125,10 @@
         '<span class="cost">' + E.money(it.cost) + (emoji[i] ? ' <span class="e">' + emoji[i] + "</span>" : "") + "</span></div>";
     }).join("") : '<div class="row"><div class="meta">No meetings this week.</div></div>';
 
-    $("footNote").textContent = (S.isLive()
-      ? "Titles resolved via Microsoft Graph"
-      : "Demo data — sign in to cost your real calendar") +
-      " · salaries estimated from levels.fyi · insights by Work IQ · for laughs, not payroll 🙂";
+    var srcLabel = S.isLive() ? "Titles resolved via Microsoft Graph"
+      : (S.isImported && S.isImported()) ? "Your week, imported via Work IQ"
+      : "Demo data — import your week via a Work IQ agent (open Connect)";
+    $("footNote").textContent = srcLabel + " · salaries estimated from levels.fyi · for laughs, not payroll 🙂";
   }
 
   function renderInsight(ins) {

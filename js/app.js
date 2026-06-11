@@ -266,8 +266,30 @@
     }
   }
 
+  // A Work IQ agent can launch us with the week in the URL hash
+  // (#data=<base64 of the meetings JSON>). Decode into the import store, then
+  // strip the hash so a refresh / the URL bar stay clean.
+  function ingestHash() {
+    try {
+      var h = location.hash || "";
+      var i = h.indexOf("data=");
+      if (i < 0) return;
+      var raw = h.slice(i + 5);
+      try { raw = decodeURIComponent(raw); } catch (e) {}
+      var bin = atob(raw);
+      var json = decodeURIComponent(bin.split("").map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(""));
+      var arr = JSON.parse(json);
+      if (Array.isArray(arr) && arr.length) S.importJson(JSON.stringify(arr));
+    } catch (e) { console.warn("[Burn Rate] hash import failed:", e); }
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  }
+
   async function init() {
     initTheme(); initNav(); initConn(); initShare(); initQuick(); buildPixelLayer();
+    ingestHash();
+    window.addEventListener("hashchange", function () { ingestHash(); reload(); });
     try { await S.restore(); } catch (e) {}
     await reload();
   }
